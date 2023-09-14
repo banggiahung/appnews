@@ -1,25 +1,61 @@
-import 'react-native-gesture-handler';
-
-import * as React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-
-import HomeScreen from '../screens/HomeScreen';
-import AllNewsScreenByCategory from '../screens/AllNewsScreenByCategory';
-import NewsDetailScreen from '../screens/NewsDetailScreen';
-import {ColorCustom} from './index.js';
-import {useSelector} from 'react-redux';
-import {getTitle} from '../slices/HeaderTitleSlice';
-import VideoNewsScreen from '../screens/VideoNewsScreen';
-import {Button, Image, TouchableOpacity, View} from 'react-native';
-import {AddCate, EmptyCate, getCate} from '../slices/CategorySlice';
-
-import {createDrawerNavigator} from '@react-navigation/drawer';
+import "react-native-gesture-handler";
+import * as React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { lazy, useEffect, useState } from "react";
+import NewsDetailScreen from "../screens/NewsDetailScreen";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import { Button, Image, Text, TouchableOpacity, View } from "react-native";
+import { category, ColorCustom } from "./index.js";
+import { useSelector } from "react-redux";
+import { getTitle } from "../slices/HeaderTitleSlice";
+import VideoNewsScreen from "../screens/VideoNewsScreen";
+import AllNewsScreenByCategory from "../screens/AllNewsScreenByCategory";
+import HomeScreen from "../screens/HomeScreen";
+import axios from "./Axios";
 
 const Drawer = createDrawerNavigator();
 
 function Navigation() {
-  let title = useSelector(getTitle);
-  let cate = useSelector(getCate);
+
+  const getCategoryData = () => {
+    return axios.get("/api/v1/Items/GetAllCategoryMobile")
+      .then((data) => {
+        let count = data.category.length;
+        for (let i = 0; i < count; i++) {
+          list.push(data.category[i]);
+        }
+        return list;
+      })
+      .catch((err) => {
+        let list = [];
+        for (let i = 0; i < 3; i++) {
+          list.push(category[i]);
+        }
+        return list;
+      });
+  };
+
+  let [loading, setLoading] = useState(true);
+  let [cate, setCate] = useState([]);
+
+  useEffect(() => {
+    Promise.all([getCategoryData()])
+      .then(data => {
+        console.log(data);
+        cate = setCate(data[0]);
+        setLoading(false)
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <View className="w-full h-screen flex flex-row justify-center items-center">
+        <View className="h-fit">
+          <Image source={require('../assets/animation/loader.gif')}/>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <NavigationContainer>
@@ -27,27 +63,28 @@ function Navigation() {
         <Drawer.Screen
           name="Home"
           component={HomeScreen}
-          options={({navigation}) => ({
-            headerTitle: 'Home',
+          options={({ navigation }) => ({
+            headerTitle: "Trang chủ",
+            drawerLabel: "Trang chủ",
             headerRight: () => {
               return (
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
                   }}>
                   <TouchableOpacity
                     style={{
                       marginLeft: 4,
                       paddingLeft: 8,
                       borderLeftWidth: 1,
-                      borderLeftColor: 'white',
+                      borderLeftColor: "white",
                     }}
-                    onPress={() => navigation.navigate('VideoNewsScreen')}>
+                    onPress={() => navigation.navigate("VideoNewsScreen")}>
                     <Image
                       className="w-10 h-10 mr-4"
                       source={{
-                        uri: 'https://devtest.ink/upload/video_icon.png',
+                        uri: "https://devtest.ink/upload/video_icon.png",
                       }}
                     />
                   </TouchableOpacity>
@@ -64,42 +101,32 @@ function Navigation() {
             key={index}
             name={category.nameCate}
             component={AllNewsScreenByCategory}
-            initialParams={{categoryId: category.id}}
+            initialParams={{ categoryId: category.id }}
             options={{
-              headerStyle: {backgroundColor: ColorCustom.headerColor},
-              headerTintColor: 'white',
+              headerStyle: { backgroundColor: ColorCustom.headerColor },
+              headerTintColor: "white",
               headerTitle: category.nameCate,
             }}
           />
         ))}
         <Drawer.Screen
-          name="AllNewsScreenByCategory"
-          component={AllNewsScreenByCategory}
-          options={{
-            headerStyle: {backgroundColor: ColorCustom.headerColor},
-            headerTintColor: 'white',
-            headerTitle: title,
-            drawerLabel: '',
-          }}
-        />
-        <Drawer.Screen
           name="DetailNews"
           component={NewsDetailScreen}
           options={{
-            headerStyle: {backgroundColor: ColorCustom.headerColor},
-            headerTintColor: 'white',
-            headerTitle: '',
-            drawerLabel: '',
+            headerStyle: { backgroundColor: ColorCustom.headerColor },
+            headerTintColor: "white",
+            headerTitle: "",
+            drawerLabel: "",
           }}
         />
         <Drawer.Screen
           name="VideoNewsScreen"
           component={VideoNewsScreen}
           options={{
-            headerStyle: {backgroundColor: ColorCustom.headerColor},
-            headerTintColor: 'white',
-            headerTitle: 'Video',
-            drawerLabel: '',
+            headerStyle: { backgroundColor: ColorCustom.headerColor },
+            headerTintColor: "white",
+            headerTitle: "Video",
+            drawerLabel: "",
           }}
         />
       </Drawer.Navigator>

@@ -83,9 +83,6 @@ function HomeScreen() {
         Promise.all([getCategoryData(), getProductData()])
             .then((results) => {
                 const [categoryData, productData] = results;
-                dispatch(EmptyCate);
-                dispatch(AddCate(categoryData));
-
                 let temp = []
                 for (let i = 0; i < categoryData.length; i++) {
                     let cate = categoryData[i];
@@ -113,7 +110,7 @@ function HomeScreen() {
                     newsData.map((item, index) => {
                         if (index % 3 === 1) {
                             return (
-                                <View className="flex-col">
+                                <View className="flex-col" key={index}>
                                     {
                                         getRandomElementsFromArray(news, 5).map((is, k) => {
                                             return (<View className="w-full px-3 my-2" key={k}>

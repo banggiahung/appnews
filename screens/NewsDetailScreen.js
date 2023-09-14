@@ -15,9 +15,11 @@ import HTML from 'react-native-render-html';
 import {useDispatch} from 'react-redux';
 import {Button} from 'react-native';
 function NewsDetailScreen() {
+  
   const openWebPage = url => {
+    console.log(url)
     if (url) {
-      Linking.openURL(url);
+      Linking.openURL("https://google.com");
     }
   };
   const dispatch = useDispatch();
@@ -30,7 +32,6 @@ function NewsDetailScreen() {
   const [mainImg, setMainImg] = useState();
   const [des, setDes] = useState('');
   useEffect(() => {
-    console.log('newsId', newsId);
     fetch(`https://devtest.ink/api/v1/Items/KeyProducts/${newsId}`, {
       method: 'GET',
       timeout: 60000,
