@@ -16,7 +16,6 @@ import ItemNewsCategory from "../components/ItemNewsCategory";
 import {products, category, BaseUrl} from "../Config";
 import Axios from "../Config/Axios";
 import {setTitle} from "../slices/HeaderTitleSlice";
-import navigation from "../Config/Navigation";
 import {useNavigation} from "@react-navigation/native";
 import { AddCate, EmptyCate } from "../slices/CategorySlice";
 import GroupNewsCategory from "../components/GroupNewsCategory"

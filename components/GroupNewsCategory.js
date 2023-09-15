@@ -28,7 +28,7 @@ function GroupNewsCategory({data, category}) {
     navigation.navigate('AllNewsScreenByCategory', {categoryId: category.id});
   };
   for (let i = 1; i < 3; i++) {
-    item1.push(
+    item1.push( 
       <View
         className="flex-1 rounded-2xl  drop-shadow-3xl bg-gray-200/95 px-3 mt-3 mb-3"
         key={i}>
