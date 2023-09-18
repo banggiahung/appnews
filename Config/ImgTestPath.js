@@ -290,14 +290,14 @@ export const products = [
 export const  category = [
     {
       "id": 4,
-      "nameCate": "Xã Hội"
+      "nameCate": "Xã Hội "
     },
     {
       "id": 3,
-      "nameCate": "Đời Sống"
+      "nameCate": "Đời Sống "
     },
     {
       "id": 1,
-      "nameCate": "Thể Thao"
+      "nameCate": "Thể Thao "
     }
   ]

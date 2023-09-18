@@ -17,43 +17,25 @@ const Drawer = createDrawerNavigator();
 
 function Navigation() {
   let title = useSelector(getTitle);
-  const getCategoryData = () => {
-
-    return axios.get("/api/v1/Items/GetAllCategoryMobile")
-    
-        .then((data) => {
-    let list = [];
-
-          console.log("data",data)
-            let count = data.category;
-            for (let i = 0; i < count; i++) {
-                list.push(data.category[i]);
-            }
-            return list;
-        })
-        .catch((err) => {
-            let list = [];
-            for (let i = 0; i < 3; i++) {
-                list.push(category[i]);
-            }
-            return list;
-        });
-}
-
-let cate = [...getCategoryData()];
-console.log("cate", cate);
+  const [cate, setCate] = useState([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchData = async () => {
+      let list = [];
+      try {
+        const response = await axios.get('/api/v1/Items/GetAllCategoryMobile');
+        list = response.category || [];
+        console.log(list);
+      } catch (error) {
+        console.log(error); 
+        list = category.slice(0, 3);
+      }
+      setCate(list);
+      setLoading(false);
+    };
+    fetchData();
+  }, []);
  
-  let [loading, setLoading] = useState(false);
-  // let [cate, setCate] = useState([]);
-
-  // useEffect(() => {
-  //   Promise.all([getCategoryData()]).then(data => {
-  //     console.log(data);
-  //     cate = setCate(data[0]);
-  //     setLoading(false);
-  //   });
-  // }, []);
-
   if (loading) {
     return (
       <View className="w-full h-screen flex flex-row justify-center items-center">
@@ -107,26 +89,36 @@ console.log("cate", cate);
         />
         
         
-        {/* {cate.map((category, index) => (
-          <Drawer.Screen
-            key={category.id}
-            name={category.nameCate}
-            component={AllNewsScreenByCategory}
-            initialParams={{categoryId: category.id}}
-            options={{
-              headerStyle: {backgroundColor: ColorCustom.headerColor},
-              headerTintColor: 'white',
-              headerTitle: category.nameCate,
-            }}
-          />
-        ))} */}
+        {cate.map((category, index) => {
+  try {
+    if (category && category.id && category.nameCate) {
+      return (
+        <Drawer.Screen
+          key={category.id}
+          name={category.nameCate}
+          component={AllNewsScreenByCategory}
+          initialParams={{categoryId: category.id}}
+          options={{
+            headerStyle: {backgroundColor: ColorCustom.headerColor},
+            headerTintColor: 'white',
+            headerTitle: category.nameCate,
+          }}
+        />
+      );
+    }
+    // Trả về null nếu dữ liệu không hợp lệ
+    return null;
+  } catch (error) {
+    console.error("Error in cate.map:", error);
+  }
+})}
         <Drawer.Screen
           name="DetailNews"
           component={NewsDetailScreen}
           options={{
             headerStyle: {backgroundColor: ColorCustom.headerColor},
             headerTintColor: 'white',
-            headerTitle: '',
+            headerTitle: 'Chi tiết tin tức',
           
             drawerLabel: '',
           }}

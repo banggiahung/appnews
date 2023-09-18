@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState,useRef } from 'react';
 import {
   Image,
   ScrollView,
@@ -22,6 +22,7 @@ function NewsDetailScreen() {
       Linking.openURL('https://google.com');
     }
   };
+  const scrollViewRef = useRef(null);
 
   const dispatch = useDispatch();
   const {width} = useWindowDimensions();
@@ -55,8 +56,9 @@ function NewsDetailScreen() {
       .get('/api/v1/Items/GetAllProductMobie')
       .then(data => {
         const allProducts = data.products;
+        const allProductsFiltered = allProducts.filter(product => product.id !== newsId);
         // Lấy 4 bài viết ngẫu nhiên
-        const randomNews = getRandomElementsFromArray(allProducts, 4);
+        const randomNews = getRandomElementsFromArray(allProductsFiltered, 4);
         setNews(randomNews);
         return allProducts;
       })
@@ -92,9 +94,11 @@ function NewsDetailScreen() {
        
       });
     getProductData();
+    scrollViewRef.current?.scrollTo({ y: 0, animated: true });
   }, [newsId]);
+
   return (
-    <ScrollView>
+    <ScrollView ref={scrollViewRef}>
       <View className="flex-1 mt-3 mx-2">
         <Text className="break-words text-3xl font-bold">{title}</Text>
         <View
@@ -157,7 +161,7 @@ function NewsDetailScreen() {
           }}
         />
         <Text style={{color: '#BB0000', fontSize: 18, fontWeight: '500'}}>
-          Lời hay ý đẹp:
+          Lời hay ý đẹp
         </Text>
       </View>
       <View
