@@ -28,7 +28,7 @@ function Navigation() {
         console.log(list);
       } catch (error) {
         console.log(error); 
-        list = category.slice(0, 3);
+        list = []
       }
       setCate(list);
       setLoading(false);

@@ -1,4 +1,4 @@
-package com.appnew;
+package com.appsukienthamnhung;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
