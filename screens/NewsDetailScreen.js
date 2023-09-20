@@ -1,4 +1,4 @@
-import React, {useEffect, useState,useRef } from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   Image,
   ScrollView,
@@ -8,13 +8,18 @@ import {
   Linking,
   TouchableOpacity,
 } from 'react-native';
+import {
+  BannerAd,
+  TestIds,
+  InterstitialAd,
+  AdEventType,
+} from 'react-native-google-mobile-ads';
 import {useRoute} from '@react-navigation/native';
 import axios from '../Config/Axios';
 import {BaseUrl} from '../Config';
 import HTML from 'react-native-render-html';
-import {useDispatch} from 'react-redux';
-import {Button} from 'react-native';
 import ItemMoreBellow from '../components/ItemMoreBellow';
+
 function NewsDetailScreen() {
   const openWebPage = url => {
     console.log(url);
@@ -24,13 +29,11 @@ function NewsDetailScreen() {
   };
   const scrollViewRef = useRef(null);
 
-  const dispatch = useDispatch();
   const {width} = useWindowDimensions();
   const route = useRoute();
   const newsId = route.params.newsId;
   const [title, setTitle] = useState();
   const [src, setSrc] = useState();
-  const [srcData, setSrcData] = useState();
   const [mainImg, setMainImg] = useState();
   const [des, setDes] = useState('');
   const [date, setDate] = useState('');
@@ -42,7 +45,7 @@ function NewsDetailScreen() {
     const shuffled = [...array].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, numberOfElements);
   };
-  const formatDate = (dateString) => {
+  const formatDate = dateString => {
     const date = new Date(dateString);
     const day = String(date.getUTCDate()).padStart(2, '0');
     const month = String(date.getUTCMonth() + 1).padStart(2, '0');
@@ -56,7 +59,9 @@ function NewsDetailScreen() {
       .get('/api/v1/Items/GetAllProductMobie')
       .then(data => {
         const allProducts = data.products;
-        const allProductsFiltered = allProducts.filter(product => product.id !== newsId);
+        const allProductsFiltered = allProducts.filter(
+          product => product.id !== newsId,
+        );
         // Lấy 4 bài viết ngẫu nhiên
         const randomNews = getRandomElementsFromArray(allProductsFiltered, 4);
         setNews(randomNews);
@@ -71,30 +76,34 @@ function NewsDetailScreen() {
         return fallbackData;
       });
   };
-  useEffect(() => {
-    fetch(`https://devtest.ink/api/v1/Items/KeyProducts/${newsId}`, {
-      method: 'GET',
-      timeout: 60000,
-    })
-      .then(res => res.json())
-      .then(data => {
-        setTitle(data.newsData.title);
-        setMainImg(data.newsData.mainImg);
-        setDes(data.newsData.description);
 
-        setSrcData(data.newsData.src);
-        setDate(formatDate(data.newsData.createDate));
-        setSrc(
-          `Nguồn ${
-            data.newsData.src.startsWith('https://www.')
-              ? data.newsData.src.replace(/^https:\/\/www\.|\/$/g, '')
-              : data.newsData.src.replace(/^https:\/\//, '').replace(/\/$/, '')
-          }`,
-        );
-       
-      });
+  useEffect(() => {
+    //create ads
+    const appOpenAd = InterstitialAd.createForAdRequest(TestIds.REWARDED, {
+      requestNonPersonalizedAdsOnly: true,
+    });
+    //load ads
+    appOpenAd.load();
+    appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
+      appOpenAd.show();
+    });
+    
+
+    axios.get(`/api/v1/Items/KeyProducts/${newsId}`).then(data => {
+      setTitle(data.newsData.title);
+      setMainImg(data.newsData.mainImg);
+      setDes(data.newsData.description);
+      setDate(formatDate(data.newsData.createDate));
+      setSrc(
+        `Nguồn ${
+          data.newsData.src.startsWith('https://www.')
+            ? data.newsData.src.replace(/^https:\/\/www\.|\/$/g, '')
+            : data.newsData.src.replace(/^https:\/\//, '').replace(/\/$/, '')
+        }`,
+      );
+    });
     getProductData();
-    scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+    scrollViewRef.current?.scrollTo({y: 0, animated: true});
   }, [newsId]);
 
   return (
@@ -128,15 +137,13 @@ function NewsDetailScreen() {
           </Text>
         </TouchableOpacity>
         <View className="flex-row mt-2">
-        <Text style={{color: 'black'}}>*{src} / </Text>
-        <TouchableOpacity onPress={openWebPage}>
+          <Text style={{color: 'black'}}>*{src} / </Text>
+          <TouchableOpacity onPress={openWebPage}>
             <Text style={{color: 'blue', textDecorationLine: 'underline'}}>
-             Nguồn dẫn
+              Nguồn dẫn
             </Text>
           </TouchableOpacity>
         </View>
-       
-
       </View>
       <View className="flex-row align-middle mt-6">
         <Image
@@ -175,7 +182,7 @@ function NewsDetailScreen() {
         }}
       >
         <Image
-          style={{width: '100%', height: 500,borderRadius: 12}}
+          style={{width: '100%', height: 500, borderRadius: 12}}
           resizeMode="cover"
           source={{
             uri: 'https://cdn.vntrip.vn/cam-nang/wp-content/uploads/2020/03/tong-hop-nhung-cau-noi-hay-nhat-ve-cuoc-song.jpg',

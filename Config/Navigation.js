@@ -25,7 +25,6 @@ function Navigation() {
       try {
         const response = await axios.get('/api/v1/Items/GetAllCategoryMobile');
         list = response.category || [];
-        console.log(list);
       } catch (error) {
         console.log(error); 
         list = []
