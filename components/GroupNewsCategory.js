@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import {BannerAd, BannerAdSize, TestIds} from "react-native-google-mobile-ads"
-import {AdsAndroidKey} from "../Config"
+import {AdsAndroidKeyBanner} from "../Config"
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';
 import {setTitle} from '../slices/HeaderTitleSlice';
@@ -145,7 +145,7 @@ function GroupNewsCategory({data, category}) {
         </View>
       </View>
       <View className="pt-2 flex-row justify-center py-1">
-        <BannerAd size={BannerAdSize.FULL_BANNER} unitId={AdsAndroidKey} />
+        <BannerAd size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} unitId={AdsAndroidKeyBanner} />
       </View>
     </View>
   );

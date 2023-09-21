@@ -17,7 +17,7 @@ import {
 } from 'react-native-google-mobile-ads';
 import {useRoute} from '@react-navigation/native';
 import axios from '../Config/Axios';
-import {BaseUrl, AdsAndroidKey} from '../Config';
+import {BaseUrl, AdsAndroidKeyBanner, AdsAndroidKeyVideo} from '../Config';
 import HTML from 'react-native-render-html';
 import ItemMoreBellow from '../components/ItemMoreBellow';
 
@@ -80,7 +80,7 @@ function NewsDetailScreen() {
 
   useEffect(() => {
     //create ads
-    const appOpenAd = InterstitialAd.createForAdRequest(AdsAndroidKey, {
+    const appOpenAd = InterstitialAd.createForAdRequest(AdsAndroidKeyVideo, {
       requestNonPersonalizedAdsOnly: true,
     });
     //load ads
@@ -131,7 +131,7 @@ function NewsDetailScreen() {
             source={{uri: `${BaseUrl}${mainImg}`}}
           />
           <View className="pt-2 flex-row justify-center py-1">
-            <BannerAd size={BannerAdSize.FULL_BANNER} unitId={AdsAndroidKey} />
+            <BannerAd size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} unitId={AdsAndroidKeyBanner} />
           </View>
         </View>
         <HTML source={{html: displayDes}} contentWidth={width} />
@@ -169,7 +169,7 @@ function NewsDetailScreen() {
         <View key={index}>
           <ItemMoreBellow dataMore={dataMore} />
           <View className="pt-2 flex-row justify-center py-1">
-            <BannerAd size={BannerAdSize.FULL_BANNER} unitId={AdsAndroidKey} />
+            <BannerAd size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} unitId={AdsAndroidKeyBanner} />
           </View>
         </View>
       ))}
@@ -202,7 +202,7 @@ function NewsDetailScreen() {
           }}
         />
         <View className="pt-2 flex-row justify-center py-1">
-          <BannerAd size={BannerAdSize.FULL_BANNER} unitId={AdsAndroidKey} />
+          <BannerAd size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} unitId={AdsAndroidKeyBanner} />
         </View>
       </View>
     </ScrollView>

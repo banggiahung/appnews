@@ -17,7 +17,7 @@ import Video from 'react-native-video';
 import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import axios from '../Config/Axios';
-import {products, category, BaseUrl, AdsAndroidKey} from '../Config';
+import {products, category, BaseUrl, AdsAndroidKeyBanner, AdsAndroidKeyVideo} from '../Config';
 
 function VideoNewsScreen() {
   const [loading, setLoading] = useState(true);
@@ -79,7 +79,7 @@ function VideoNewsScreen() {
 
   useEffect(() => {
     //create ads
-    const appOpenAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL, {
+    const appOpenAd = InterstitialAd.createForAdRequest(AdsAndroidKeyVideo, {
       requestNonPersonalizedAdsOnly: true,
     });
     //load ads
@@ -102,13 +102,14 @@ function VideoNewsScreen() {
       appOpenAd.addAdEventListener(AdEventType.CLOSED, () => {
         setLoading(false);
       });
+      
     });
   }, []);
 
   return (
     <ScrollView>
       <View className="pt-2 flex-row justify-center">
-        <BannerAd size={BannerAdSize.FULL_BANNER} unitId={AdsAndroidKey} />
+        <BannerAd size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} unitId={AdsAndroidKeyBanner} />
       </View>
       {news.map((item, index) => {
         if (item.videoPath != 'https://devtest.ink') {
@@ -139,8 +140,8 @@ function VideoNewsScreen() {
               </View>
               <View className="py-2 flex-row justify-center">
                 <BannerAd
-                  size={BannerAdSize.FULL_BANNER}
-                  unitId={AdsAndroidKey}
+                  size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+                  unitId={AdsAndroidKeyBanner}
                 />
               </View>
             </View>

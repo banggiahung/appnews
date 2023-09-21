@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import axios from '../Config/Axios';
-import {products, category, BaseUrl, AdsAndroidKey} from '../Config';
+import {products, category, BaseUrl, AdsAndroidKeyVideo, AdsAndroidKeyBanner} from '../Config';
 import Axios from '../Config/Axios';
 import {useNavigation} from '@react-navigation/native';
 import GroupNewsCategory from '../components/GroupNewsCategory';
@@ -86,7 +86,7 @@ function HomeScreen() {
 
   useEffect(() => {
     //create ads
-    const appOpenAd = InterstitialAd.createForAdRequest(AdsAndroidKey, {
+    const appOpenAd = InterstitialAd.createForAdRequest(AdsAndroidKeyVideo, {
       requestNonPersonalizedAdsOnly: true,
     });
 
@@ -105,12 +105,12 @@ function HomeScreen() {
 
       //load ads
       appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
-        appOpenAd.show()
+        //appOpenAd.show()
       });
       appOpenAd.addAdEventListener(AdEventType.CLOSED, () => {
-        setLoading(false); 
       });
       setLoading(false); 
+      
       appOpenAd.load();
     });
   }, []);
@@ -125,8 +125,8 @@ function HomeScreen() {
     return (
       <ScrollView>
         <View className="pt-2 flex flex-col ">
-          <BannerAd size={BannerAdSize.FULL_BANNER} unitId={AdsAndroidKey} />
-          <BannerAd size={BannerAdSize.FULL_BANNER} unitId={AdsAndroidKey} />
+          <BannerAd size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} unitId={AdsAndroidKeyBanner} />
+          <BannerAd size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} unitId={AdsAndroidKeyBanner} />
         </View>
         {newsData.map((item, index) => {
           if (index % 3 === 1) {
