@@ -31,7 +31,7 @@ function AllNewsScreenByCategory() {
       appOpenAd.addAdEventListener(AdEventType.CLOSED, () => {
         setItems(data.productsInCategory);
       });
-      setItems(data.productsInCategory);
+      
     });
   }, [categoryId]);
 
