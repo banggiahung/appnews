@@ -13,6 +13,7 @@ import {
   TestIds,
   InterstitialAd,
   AdEventType,
+  BannerAdSize,
 } from 'react-native-google-mobile-ads';
 import {useRoute} from '@react-navigation/native';
 import axios from '../Config/Axios';
@@ -87,7 +88,6 @@ function NewsDetailScreen() {
     appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
       appOpenAd.show();
     });
-    
 
     axios.get(`/api/v1/Items/KeyProducts/${newsId}`).then(data => {
       setTitle(data.newsData.title);
@@ -125,13 +125,21 @@ function NewsDetailScreen() {
             </Text>
           </TouchableOpacity>
         </View>
-
-        <Image
-          className="w-full h-72 object-contain"
-          source={{uri: `${BaseUrl}${mainImg}`}}
-        />
+        <View>
+          <Image
+            className="w-full h-72 object-contain"
+            source={{uri: `${BaseUrl}${mainImg}`}}
+          />
+          <View className="pt-2 flex-row justify-center py-1">
+            <BannerAd size={BannerAdSize.FULL_BANNER} unitId={TestIds.BANNER} />
+          </View>
+        </View>
         <HTML source={{html: displayDes}} contentWidth={width} />
-        <TouchableOpacity onPress={() => setShowMore(!showMore)}>
+        <TouchableOpacity
+          onPress={() => {
+            setShowMore(!showMore);
+          }}
+        >
           <Text style={{color: 'black', fontSize: 18}}>
             {showMore ? 'Thu gọn' : 'Đọc tiếp...'}
           </Text>
@@ -158,7 +166,12 @@ function NewsDetailScreen() {
       </View>
 
       {news.map((dataMore, index) => (
-        <ItemMoreBellow key={index} dataMore={dataMore} />
+        <View key={index}>
+          <ItemMoreBellow dataMore={dataMore} />
+          <View className="pt-2 flex-row justify-center py-1">
+            <BannerAd size={BannerAdSize.FULL_BANNER} unitId={TestIds.BANNER} />
+          </View>
+        </View>
       ))}
       <View className="flex-row align-middle mt-6">
         <Image
@@ -188,6 +201,9 @@ function NewsDetailScreen() {
             uri: 'https://cdn.vntrip.vn/cam-nang/wp-content/uploads/2020/03/tong-hop-nhung-cau-noi-hay-nhat-ve-cuoc-song.jpg',
           }}
         />
+        <View className="pt-2 flex-row justify-center py-1">
+          <BannerAd size={BannerAdSize.FULL_BANNER} unitId={TestIds.BANNER} />
+        </View>
       </View>
     </ScrollView>
   );

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Image, Text, TouchableOpacity, View} from 'react-native';
-import {ImgTestPath} from '../Config/ImgTestPath';
 import {useNavigation} from '@react-navigation/native';
+
 
 function ItemNewsCategory({data}) {
   if (data.mainImg == null) {

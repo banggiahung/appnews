@@ -3,7 +3,13 @@ import {ScrollView, Text, View} from 'react-native';
 import ItemNewsCategory from '../components/ItemNewsCategory';
 import axios from '../Config/Axios';
 import {useRoute} from '@react-navigation/native';
-import {TestIds, InterstitialAd, AdEventType} from 'react-native-google-mobile-ads'
+import {
+  TestIds,
+  InterstitialAd,
+  AdEventType,
+  BannerAd,
+  BannerAdSize,
+} from 'react-native-google-mobile-ads';
 
 function AllNewsScreenByCategory() {
   const route = useRoute();
@@ -11,30 +17,39 @@ function AllNewsScreenByCategory() {
   const categoryId = route.params.categoryId;
   useEffect(() => {
     //create ads
-    const appOpenAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL, {
+    const appOpenAd = InterstitialAd.createForAdRequest(TestIds.REWARDED, {
       requestNonPersonalizedAdsOnly: true,
     });
-
+    //load ads
+    appOpenAd.load();
     appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
-        appOpenAd.show();
-      });
+      appOpenAd.show();
+    });
 
     axios.get(`/api/v1/Items/KeyCategory/${categoryId}`).then(data => {
-      //load ads
-      
       appOpenAd.addAdEventListener(AdEventType.CLOSED, () => {
         setItems(data.productsInCategory);
       });
-      
     });
-    appOpenAd.load();
   }, [categoryId]);
 
   return (
     <ScrollView>
       <ScrollView>
         {items.map((item, index) => (
-          <ItemNewsCategory key={index} data={item} />
+          <View key={index}>
+            <ItemNewsCategory data={item} />
+            <View className="pt-2 flex flex-col">
+              <BannerAd
+                size={BannerAdSize.FULL_BANNER}
+                unitId={TestIds.BANNER}
+              />
+              <BannerAd
+                size={BannerAdSize.FULL_BANNER}
+                unitId={TestIds.BANNER}
+              />
+            </View>
+          </View>
         ))}
       </ScrollView>
     </ScrollView>

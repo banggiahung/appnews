@@ -6,11 +6,19 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+import {
+  BannerAd,
+  TestIds,
+  InterstitialAd,
+  BannerAdSize,
+  AdEventType,
+} from 'react-native-google-mobile-ads';
 import Video from 'react-native-video';
 import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import axios from '../Config/Axios';
 import {products, category, BaseUrl} from '../Config';
+
 function VideoNewsScreen() {
   const [loading, setLoading] = useState(true);
   const [newsData, setNewsData] = useState([]);
@@ -70,6 +78,15 @@ function VideoNewsScreen() {
   };
 
   useEffect(() => {
+    //create ads
+    const appOpenAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL, {
+      requestNonPersonalizedAdsOnly: true,
+    });
+    //load ads
+    appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
+      appOpenAd.show()
+    });
+
     Promise.all([getCategoryData(), getProductData()]).then(results => {
       const [categoryData, productData] = results;
       let temp = [];
@@ -82,31 +99,49 @@ function VideoNewsScreen() {
       }
       setNewsData(temp);
       setNews(productData);
-      setLoading(false);
+      appOpenAd.addAdEventListener(AdEventType.CLOSED, () => {
+        setLoading(false);
+      });
     });
   }, []);
-  
+
   return (
     <ScrollView>
+      <View className="pt-2 flex-row justify-center">
+        <BannerAd size={BannerAdSize.FULL_BANNER} unitId={TestIds.BANNER} />
+      </View>
       {news.map((item, index) => {
         if (item.videoPath != 'https://devtest.ink') {
           return (
-            <View className="flex-col" style={[styles.card, styles.shadowProp]} key={index}>
-             
-              <Video
-                className="w-full h-64"
-                source={{uri: item.videoPath}}
-                ref={ref => {
-                  this.player = ref;
-                }} 
-                onBuffer={this.onBuffer} 
-                onError={this.videoError}
-       controls={true}
-       paused={false}
-              />
-             
-              <View>
-                <Text className="text-2xl text-center" style={styles.heading}>{item.title}</Text>
+            <View>
+              <View
+                className="flex-col"
+                style={[styles.card, styles.shadowProp]}
+                key={index}
+              >
+                <Video
+                  className="w-full h-64"
+                  source={{uri: item.videoPath}}
+                  ref={ref => {
+                    this.player = ref;
+                  }}
+                  onBuffer={this.onBuffer}
+                  onError={this.videoError}
+                  controls={true}
+                  paused={false}
+                />
+
+                <View>
+                  <Text className="text-2xl text-center" style={styles.heading}>
+                    {item.title}
+                  </Text>
+                </View>
+              </View>
+              <View className="py-2 flex-row justify-center">
+                <BannerAd
+                  size={BannerAdSize.FULL_BANNER}
+                  unitId={TestIds.BANNER}
+                />
               </View>
             </View>
           );

@@ -9,7 +9,7 @@ import {
   Alert,
   Image,
   StyleSheet,
-  Button
+  Button,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import axios from '../Config/Axios';
@@ -22,16 +22,16 @@ import {
   InterstitialAd,
   AdEventType,
   TestIds,
+  BannerAd,
+  BannerAdSize,
 } from 'react-native-google-mobile-ads';
 
-
 function HomeScreen() {
-
   const [loading, setLoading] = useState(true);
   const [newsData, setNewsData] = useState([]);
   const [news, setNews] = useState([]);
   const navigation = useNavigation();
-  
+
   const getRandomElementsFromArray = (array, numberOfElements) => {
     if (numberOfElements > array.length) {
       return [];
@@ -90,7 +90,7 @@ function HomeScreen() {
     const appOpenAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL, {
       requestNonPersonalizedAdsOnly: true,
     });
-    
+
     Promise.all([getCategoryData(), getProductData()]).then(results => {
       const [categoryData, productData] = results;
       let temp = [];
@@ -105,14 +105,13 @@ function HomeScreen() {
       setNews(productData);
 
       //load ads
-      appOpenAd.addAdEventListener(AdEventType.LOADED,()=>{
+      appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
         appOpenAd.show()
-      })
-      appOpenAd.addAdEventListener(AdEventType.CLOSED,()=>{
-        setLoading(false)
-      })
+      });
+      appOpenAd.addAdEventListener(AdEventType.CLOSED, () => {
+        setLoading(false); 
+      });
       appOpenAd.load();
-
     });
   }, []);
 
@@ -125,6 +124,11 @@ function HomeScreen() {
   } else {
     return (
       <ScrollView>
+        <View className="pt-2 flex flex-col ">
+          <BannerAd size={BannerAdSize.FULL_BANNER} unitId={TestIds.BANNER} />
+          <BannerAd size={BannerAdSize.FULL_BANNER} unitId={TestIds.BANNER} />
+          <BannerAd size={BannerAdSize.FULL_BANNER} unitId={TestIds.BANNER} />
+        </View>
         {newsData.map((item, index) => {
           if (index % 3 === 1) {
             return (
@@ -159,6 +163,7 @@ function HomeScreen() {
             );
           }
         })}
+
       </ScrollView>
     );
   }
