@@ -157,7 +157,7 @@ function NewsDetailScreen() {
         <Image
           className="w-6 h-6 mr-2 ml-1"
           source={{
-            uri: 'https://devtest.ink/upload/sao.png',
+            uri: 'https://tintuc.devtest.ink/upload/sao.png',
           }}
         />
         <Text style={{color: '#BB0000', fontSize: 18, fontWeight: '500'}}>
@@ -177,7 +177,7 @@ function NewsDetailScreen() {
         <Image
           className="w-6 h-6 mr-2 ml-1"
           source={{
-            uri: 'https://devtest.ink/upload/sao.png',
+            uri: 'https://tintuc.devtest.ink/upload/sao.png',
           }}
         />
         <Text style={{color: '#BB0000', fontSize: 18, fontWeight: '500'}}>
