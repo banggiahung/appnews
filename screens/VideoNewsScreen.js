@@ -17,7 +17,7 @@ import Video from 'react-native-video';
 import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import axios from '../Config/Axios';
-import {products, category, BaseUrl} from '../Config';
+import {products, category, BaseUrl, AdsAndroidKey} from '../Config';
 
 function VideoNewsScreen() {
   const [loading, setLoading] = useState(true);
@@ -108,7 +108,7 @@ function VideoNewsScreen() {
   return (
     <ScrollView>
       <View className="pt-2 flex-row justify-center">
-        <BannerAd size={BannerAdSize.FULL_BANNER} unitId={TestIds.BANNER} />
+        <BannerAd size={BannerAdSize.FULL_BANNER} unitId={AdsAndroidKey} />
       </View>
       {news.map((item, index) => {
         if (item.videoPath != 'https://devtest.ink') {
@@ -140,7 +140,7 @@ function VideoNewsScreen() {
               <View className="py-2 flex-row justify-center">
                 <BannerAd
                   size={BannerAdSize.FULL_BANNER}
-                  unitId={TestIds.BANNER}
+                  unitId={AdsAndroidKey}
                 />
               </View>
             </View>

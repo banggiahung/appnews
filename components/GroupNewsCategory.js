@@ -7,13 +7,12 @@ import {
   View,
 } from 'react-native';
 import {BannerAd, BannerAdSize, TestIds} from "react-native-google-mobile-ads"
-import ItemNewsCategory from './ItemNewsCategory';
+import {AdsAndroidKey} from "../Config"
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';
 import {setTitle} from '../slices/HeaderTitleSlice';
 import RenderHTML from 'react-native-render-html';
 import HTML from 'react-native-render-html';
-import {ImgTestPath} from '../Config/ImgTestPath';
 
 function GroupNewsCategory({data, category}) {
   const item2 = [];
@@ -146,7 +145,7 @@ function GroupNewsCategory({data, category}) {
         </View>
       </View>
       <View className="pt-2 flex-row justify-center py-1">
-        <BannerAd size={BannerAdSize.FULL_BANNER} unitId={TestIds.BANNER} />
+        <BannerAd size={BannerAdSize.FULL_BANNER} unitId={AdsAndroidKey} />
       </View>
     </View>
   );

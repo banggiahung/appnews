@@ -10,6 +10,7 @@ import {
   BannerAd,
   BannerAdSize,
 } from 'react-native-google-mobile-ads';
+import {AdsAndroidKey} from "../Config"
 
 function AllNewsScreenByCategory() {
   const route = useRoute();
@@ -17,7 +18,7 @@ function AllNewsScreenByCategory() {
   const categoryId = route.params.categoryId;
   useEffect(() => {
     //create ads
-    const appOpenAd = InterstitialAd.createForAdRequest(TestIds.REWARDED, {
+    const appOpenAd = InterstitialAd.createForAdRequest(AdsAndroidKey, {
       requestNonPersonalizedAdsOnly: true,
     });
     //load ads
@@ -30,6 +31,7 @@ function AllNewsScreenByCategory() {
       appOpenAd.addAdEventListener(AdEventType.CLOSED, () => {
         setItems(data.productsInCategory);
       });
+      setItems(data.productsInCategory);
     });
   }, [categoryId]);
 
@@ -42,11 +44,11 @@ function AllNewsScreenByCategory() {
             <View className="pt-2 flex flex-col">
               <BannerAd
                 size={BannerAdSize.FULL_BANNER}
-                unitId={TestIds.BANNER}
+                unitId={AdsAndroidKey}
               />
               <BannerAd
                 size={BannerAdSize.FULL_BANNER}
-                unitId={TestIds.BANNER}
+                unitId={AdsAndroidKey}
               />
             </View>
           </View>
