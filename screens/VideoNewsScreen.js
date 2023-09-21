@@ -99,9 +99,7 @@ function VideoNewsScreen() {
       }
       setNewsData(temp);
       setNews(productData);
-      appOpenAd.addAdEventListener(AdEventType.CLOSED, () => {
-        setLoading(false);
-      });
+      setLoading(false);
       
     });
   }, []);

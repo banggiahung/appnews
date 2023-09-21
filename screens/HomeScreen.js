@@ -107,9 +107,8 @@ function HomeScreen() {
       appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
         appOpenAd.show()
       });
-      appOpenAd.addAdEventListener(AdEventType.CLOSED, () => {
-        setLoading(false); 
-      });
+      
+      setLoading(false); 
       
       appOpenAd.load();
     });

@@ -28,9 +28,7 @@ function AllNewsScreenByCategory() {
     });
 
     axios.get(`/api/v1/Items/KeyCategory/${categoryId}`).then(data => {
-      appOpenAd.addAdEventListener(AdEventType.CLOSED, () => {
-        setItems(data.productsInCategory);
-      });
+      setItems(data.productsInCategory);
       
     });
   }, [categoryId]);
