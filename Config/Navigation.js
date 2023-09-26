@@ -117,8 +117,10 @@ function Navigation() {
             headerStyle: {backgroundColor: ColorCustom.headerColor},
             headerTintColor: 'white',
             headerTitle: 'Chi tiết tin tức',
-          
-            drawerLabel: '',
+            drawerLabel: () => null,
+            title: null,
+            drawerIcon: () => null,
+            drawerItemStyle: { height: 0 }
           }}
         />
         <Drawer.Screen
@@ -128,8 +130,10 @@ function Navigation() {
             headerStyle: {backgroundColor: ColorCustom.headerColor},
             headerTintColor: 'white',
             headerTitle: 'Video',
-      
-            drawerLabel: '',
+            drawerLabel: () => null,
+            title: null,
+            drawerIcon: () => null,
+            drawerItemStyle: { height: 0 }
           }}
         />
         <Drawer.Screen
@@ -139,11 +143,12 @@ function Navigation() {
             headerStyle: {backgroundColor: ColorCustom.headerColor},
             headerTintColor: 'white',
              headerTitle: title,
-            drawerLabel: '',
+             drawerLabel: () => null,
+             title: null,
+             drawerIcon: () => null,
+             drawerItemStyle: { height: 0 }
           }}
         />
-
-
       </Drawer.Navigator>
     </NavigationContainer>
   );
