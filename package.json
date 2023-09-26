@@ -24,7 +24,7 @@
     "react-native-gesture-handler": "2.9.0",
     "react-native-google-mobile-ads": "^10.3.2",
     "react-native-image": "^0.1.1",
-    "react-native-reanimated": "^3.5.1",
+    "react-native-reanimated": "^3.1.0",
     "react-native-render-html": "^6.3.4",
     "react-native-safe-area-context": "^4.7.2",
     "react-native-screens": "^3.25.0",

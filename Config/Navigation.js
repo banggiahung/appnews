@@ -1,4 +1,3 @@
-import 'react-native-gesture-handler';
 import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {lazy, useEffect, useState} from 'react';
@@ -74,7 +73,7 @@ function Navigation() {
                     <Image
                       className="w-10 h-10 mr-4"
                       source={{
-                        uri: 'https://devtest.ink/upload/video_icon.png',
+                        uri: 'https://tintuc.devtest.ink/upload/video_icon.png',
                       }}
                     />
                   </TouchableOpacity>
