@@ -112,7 +112,7 @@ function VideoNewsScreen() {
       {news.map((item, index) => {
         if (item.videoPath != 'https://devtest.ink') {
           return (
-            <View>
+            <View key={index}>
               <View
                 className="flex-col"
                 style={[styles.card, styles.shadowProp]}
