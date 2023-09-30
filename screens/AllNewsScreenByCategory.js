@@ -24,12 +24,12 @@ function AllNewsScreenByCategory() {
     //load ads
     appOpenAd.load();
     appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
-      appOpenAd.show();
+      //appOpenAd.show();
     });
 
     axios.get(`/api/v1/Items/KeyCategory/${categoryId}`).then(data => {
       setItems(data.productsInCategory);
-      
+
     });
   }, [categoryId]);
 

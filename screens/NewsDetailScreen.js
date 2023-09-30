@@ -23,9 +23,9 @@ import ItemMoreBellow from '../components/ItemMoreBellow';
 
 function NewsDetailScreen() {
   const openWebPage = url => {
-    console.log(url);
+    console.log("url", url);
     if (url) {
-      Linking.openURL('https://google.com');
+      Linking.openURL(srcUrlOpenWeb);
     }
   };
   const scrollViewRef = useRef(null);
@@ -35,6 +35,7 @@ function NewsDetailScreen() {
   const newsId = route.params.newsId;
   const [title, setTitle] = useState();
   const [src, setSrc] = useState();
+  const [srcUrlOpenWeb, setSrcUrlOpenWeb] = useState("https://www.google.com/")
   const [mainImg, setMainImg] = useState();
   const [des, setDes] = useState('');
   const [date, setDate] = useState('');
@@ -86,7 +87,7 @@ function NewsDetailScreen() {
     //load ads
     appOpenAd.load();
     appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
-      appOpenAd.show();
+      //appOpenAd.show();
     });
 
     axios.get(`/api/v1/Items/KeyProducts/${newsId}`).then(data => {
@@ -101,6 +102,8 @@ function NewsDetailScreen() {
             : data.newsData.src.replace(/^https:\/\//, '').replace(/\/$/, '')
         }`,
       );
+      setSrcUrlOpenWeb(data.newsData.src)
+
     });
     getProductData();
     scrollViewRef.current?.scrollTo({y: 0, animated: true});
@@ -109,7 +112,7 @@ function NewsDetailScreen() {
   return (
     <ScrollView ref={scrollViewRef}>
       <View className="flex-1 mt-3 mx-2">
-        <Text className="break-words text-3xl font-bold">{title}</Text>
+        <Text className="break-words text-3xl font-bold text-black">{title}</Text>
         <View
           style={{
             flexDirection: 'row',
@@ -134,7 +137,7 @@ function NewsDetailScreen() {
             <BannerAd size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} unitId={AdsAndroidKeyBanner} />
           </View>
         </View>
-        <HTML source={{html: displayDes}} contentWidth={width} />
+        <HTML source={{html: displayDes}} contentWidth={width} tagsStyles={{p:{color:"black"}, span:{color:"black"}}}/>
         <TouchableOpacity
           onPress={() => {
             setShowMore(!showMore);
@@ -161,6 +164,24 @@ function NewsDetailScreen() {
           }}
         />
         <Text style={{color: '#BB0000', fontSize: 18, fontWeight: '500'}}>
+          Lời hay ý đẹp
+        </Text>
+      </View>
+      <Image
+        style={{width: '100%', height: 500, borderRadius: 12}}
+        resizeMode="cover"
+        source={{
+          uri: 'https://cdn.vntrip.vn/cam-nang/wp-content/uploads/2020/03/tong-hop-nhung-cau-noi-hay-nhat-ve-cuoc-song.jpg',
+        }}
+      />
+      <View className="flex-row align-middle mt-6">
+        <Image
+          className="w-6 h-6 mr-2 ml-1"
+          source={{
+            uri: 'https://tintuc.devtest.ink/upload/sao.png',
+          }}
+        />
+        <Text style={{color: '#BB0000', fontSize: 18, fontWeight: '500'}}>
           Bài viết xem nhiều:
         </Text>
       </View>
@@ -173,17 +194,7 @@ function NewsDetailScreen() {
           </View>
         </View>
       ))}
-      <View className="flex-row align-middle mt-6">
-        <Image
-          className="w-6 h-6 mr-2 ml-1"
-          source={{
-            uri: 'https://tintuc.devtest.ink/upload/sao.png',
-          }}
-        />
-        <Text style={{color: '#BB0000', fontSize: 18, fontWeight: '500'}}>
-          Lời hay ý đẹp
-        </Text>
-      </View>
+
       <View
         className="h-fit mr-2 ml-2"
         style={{
@@ -194,13 +205,6 @@ function NewsDetailScreen() {
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
         }}
       >
-        <Image
-          style={{width: '100%', height: 500, borderRadius: 12}}
-          resizeMode="cover"
-          source={{
-            uri: 'https://cdn.vntrip.vn/cam-nang/wp-content/uploads/2020/03/tong-hop-nhung-cau-noi-hay-nhat-ve-cuoc-song.jpg',
-          }}
-        />
         <View className="pt-2 flex-row justify-center py-1">
           <BannerAd size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} unitId={AdsAndroidKeyBanner} />
         </View>
