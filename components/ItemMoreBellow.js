@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Image, Text, TouchableOpacity, View} from 'react-native';
 import {ImgTestPath} from '../Config/ImgTestPath';
 import {useNavigation} from '@react-navigation/native';
+import {BaseUrl, AdsAndroidKeyBanner, AdsAndroidKeyVideo} from '../Config';
 
 function ItemMoreBellow({dataMore}) {
     if (dataMore.mainImg == null) {
@@ -31,7 +32,7 @@ function ItemMoreBellow({dataMore}) {
             <View style={{overflow: 'hidden'}}>
               <Image
                 style={{height: 200,  borderTopLeftRadius: 12,borderTopRightRadius: 12}}
-                source={{uri: dataMore.mainImg}}
+                source={{uri: BaseUrl + dataMore.mainImg}}
               />
             </View>
             <View className="w-full px-2 ">

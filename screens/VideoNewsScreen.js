@@ -4,20 +4,27 @@ import {
   Button,
   Text,
   ScrollView,
-  TouchableOpacity, Image,
-} from "react-native";
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import {
   BannerAd,
   TestIds,
   InterstitialAd,
   BannerAdSize,
   AdEventType,
-} from "react-native-google-mobile-ads";
-import Video from "react-native-video";
-import React, { useEffect, useLayoutEffect, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
-import axios from "../Config/Axios";
-import { products, category, BaseUrl, AdsAndroidKeyBanner, AdsAndroidKeyVideo } from "../Config";
+} from 'react-native-google-mobile-ads';
+import Video from 'react-native-video';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
+import {useNavigation} from '@react-navigation/native';
+import axios from '../Config/Axios';
+import {
+  products,
+  category,
+  BaseUrl,
+  AdsAndroidKeyBanner,
+  AdsAndroidKeyVideo,
+} from '../Config';
 
 function VideoNewsScreen() {
   const [loading, setLoading] = useState(true);
@@ -39,7 +46,7 @@ function VideoNewsScreen() {
 
   const getCategoryData = () => {
     return axios
-      .get("/api/v1/Items/GetAllCategoryMobile")
+      .get('/api/v1/Items/GetAllCategoryMobile')
       .then(data => {
         let count = data.category.length;
         for (let i = 0; i < count; i++) {
@@ -58,12 +65,12 @@ function VideoNewsScreen() {
 
   const getProductData = () => {
     return axios
-      .get("/api/v1/Items/GetAllProductMobie")
+      .get('/api/v1/Items/GetAllVideoMobie')
       .then(data => {
-        let count = data.products.length;
+        let count = data.video.length;
         let list = [];
         for (let i = 0; i < count; i++) {
-          list.push(data.products[i]);
+          list.push(data.video[i]);
         }
         return list;
       })
@@ -89,52 +96,66 @@ function VideoNewsScreen() {
 
     Promise.all([getCategoryData(), getProductData()]).then(results => {
       const [categoryData, productData] = results;
-      let temp = [];
-      for (let i = 0; i < categoryData.length; i++) {
-        let cate = categoryData[i];
-        let news = productData
-          .filter(k => k.cateID.includes(cate.id))
-          .splice(0, 5);
-        temp.push({ cate, news });
-      }
-      setNewsData(temp);
+      console.log(productData);
       setNews(productData);
       setLoading(false);
-
     });
   }, []);
 
   return (
     <ScrollView>
       <View className="pt-2 flex-row justify-center">
-        <BannerAd size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} unitId={AdsAndroidKeyBanner} />
+        <BannerAd
+          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+          unitId={AdsAndroidKeyBanner}
+        />
       </View>
       {news.map((item, index) => {
-        if (item.videoPath != "https://devtest.ink") {
-          return (
-            <View key={index}>
-              <TouchableOpacity
-                className="flex-col"
-                style={[styles.card, styles.shadowProp]}
-                onPress={()=>{navigation.navigate("VideoDetailScreen", {videoId: '12'})}}
+        return (
+          <View key={index} className="">
+            <TouchableOpacity
+              className="flex-col"
+              style={[styles.card, styles.shadowProp]}
+              onPress={() => {
+                navigation.navigate('VideoDetailScreen', {videoId: item.id});
+              }}
+            >
+              <Image className="w-full h-60 relative" source={{uri: item.mainPathImg}} />
+              <View
+                style={{
+                  position: 'absolute',
+                  top: '30%',
+                  left: '45%',
+                  transform: [{translateX: -15}, {translateY: -15}],
+                  zIndex: 2,
+                }}
               >
-                <Image className="w-full h-60"
-                       source={{ uri: "https://icdn.24h.com.vn/upload/3-2023/images/2023-09-29//adt1696004842-tien4-1695808980738144625089-23-0-39_anh_cat_3_2.png" }} />
-                <View>
-                  <Text className="text-2xl text-center" style={styles.heading}>
-                    {item.title}
-                  </Text>
+                <View
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Image
+                    source={require('../assets/SystemImg/play_video.png')}
+                    style={{width: 100, height: 100}}
+                  />
                 </View>
-              </TouchableOpacity>
-              <View className="py-2 flex-row justify-center">
-                <BannerAd
-                  size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-                  unitId={AdsAndroidKeyBanner}
-                />
               </View>
+              <View>
+                <Text className="text-2xl text-center" style={styles.heading}>
+                  {item.titile}
+                </Text>
+              </View>
+            </TouchableOpacity>
+            <View className="py-2 flex-row justify-center">
+              <BannerAd
+                size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+                unitId={AdsAndroidKeyBanner}
+              />
             </View>
-          );
-        }
+          </View>
+        );
       })}
     </ScrollView>
   );
@@ -143,20 +164,20 @@ function VideoNewsScreen() {
 const styles = StyleSheet.create({
   heading: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
     marginBottom: 13,
   },
   card: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 12,
     paddingVertical: 15,
     paddingHorizontal: 15,
-    width: "100%",
+    width: '100%',
     marginVertical: 10,
   },
   shadowProp: {
-    shadowColor: "#171717",
-    shadowOffset: { width: -2, height: 4 },
+    shadowColor: '#171717',
+    shadowOffset: {width: -2, height: 4},
     shadowOpacity: 0.2,
     shadowRadius: 3,
   },

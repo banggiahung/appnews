@@ -7,6 +7,7 @@ import {
   View,
   Linking,
   TouchableOpacity,
+  Dimensions 
 } from 'react-native';
 import {
   BannerAd,
@@ -23,25 +24,34 @@ import ItemMoreBellow from '../components/ItemMoreBellow';
 
 function NewsDetailScreen() {
   const openWebPage = url => {
-    console.log("url", url);
+    console.log('url', url);
     if (url) {
-      Linking.openURL(srcUrlOpenWeb);
+      Linking.openURL(url);
     }
   };
+   const openWebPage2 = url => {
+     console.log('url', url);
+     if (url) {
+       Linking.openURL(url);
+    }
+   };
   const scrollViewRef = useRef(null);
 
   const {width} = useWindowDimensions();
   const route = useRoute();
   const newsId = route.params.newsId;
   const [title, setTitle] = useState();
+  const [srcMain, setSrcMain] = useState();
+  const [contentDetails, setContentDetails] = useState();
   const [src, setSrc] = useState();
-  const [srcUrlOpenWeb, setSrcUrlOpenWeb] = useState("https://www.google.com/")
+  const [srcClick, setSrcCLick] = useState();
+  const [srcUrlOpenWeb, setSrcUrlOpenWeb] = useState('https://www.google.com/');
   const [mainImg, setMainImg] = useState();
   const [des, setDes] = useState('');
   const [date, setDate] = useState('');
   const [showMore, setShowMore] = useState(false);
-  const partialDes = des.substring(0, Math.floor(des.length / 2));
-  const displayDes = showMore ? des : partialDes;
+  // const partialDes = des.substring(0, Math.floor(des.length / 2));
+  // const displayDes = showMore ? des : partialDes;
   const [news, setNews] = useState([]);
   const getRandomElementsFromArray = (array, numberOfElements) => {
     const shuffled = [...array].sort(() => 0.5 - Math.random());
@@ -58,28 +68,27 @@ function NewsDetailScreen() {
   };
   const getProductData = async () => {
     return axios
-      .get('/api/v1/Items/GetAllProductMobie')
+      .get('/api/v1/Items/KeyProductLastest')
       .then(data => {
         const allProducts = data.products;
         const allProductsFiltered = allProducts.filter(
           product => product.id !== newsId,
         );
         // Lấy 4 bài viết ngẫu nhiên
-        const randomNews = getRandomElementsFromArray(allProductsFiltered, 4);
-        setNews(randomNews);
+        setNews(allProductsFiltered);
         return allProducts;
       })
       .catch(err => {
         setLoading(false);
-        const fallbackData = products.slice(0, 21); // Giả sử `products` là dữ liệu dự phòng của bạn
-        // Lấy 4 bài viết ngẫu nhiên từ dữ liệu dự phòng
+        const fallbackData = products.slice(0, 21); 
         const randomNews = getRandomElementsFromArray(fallbackData, 4);
         setNews(randomNews);
         return fallbackData;
       });
   };
-
+  const screenWidth = Dimensions.get('window').width;
   useEffect(() => {
+    
     //create ads
     const appOpenAd = InterstitialAd.createForAdRequest(AdsAndroidKeyVideo, {
       requestNonPersonalizedAdsOnly: true,
@@ -93,6 +102,7 @@ function NewsDetailScreen() {
     axios.get(`/api/v1/Items/KeyProducts/${newsId}`).then(data => {
       setTitle(data.newsData.title);
       setMainImg(data.newsData.mainImg);
+      setContentDetails(data.newsData.contentDetails);
       setDes(data.newsData.description);
       setDate(formatDate(data.newsData.createDate));
       setSrc(
@@ -102,8 +112,22 @@ function NewsDetailScreen() {
             : data.newsData.src.replace(/^https:\/\//, '').replace(/\/$/, '')
         }`,
       );
-      setSrcUrlOpenWeb(data.newsData.src)
+      if (data.newsData.srcMain != null) {
+        setSrcMain(
+          `Nguồn ${
+            data.newsData.srcMain.startsWith('https://www.')
+              ? data.newsData.srcMain.replace(/^https:\/\/www\.|\/$/g, '')
+              : data.newsData.srcMain
+                  .replace(/^https:\/\//, '')
+                  .replace(/\/$/, '')
+          }`,
+        );
+      } else {
+        setSrcMain('Chưa có nguồn');
+      }
 
+      setSrcUrlOpenWeb(data.newsData.src);
+      setSrcCLick(data.newsData.srcMain);
     });
     getProductData();
     scrollViewRef.current?.scrollTo({y: 0, animated: true});
@@ -112,7 +136,9 @@ function NewsDetailScreen() {
   return (
     <ScrollView ref={scrollViewRef}>
       <View className="flex-1 mt-3 mx-2">
-        <Text className="break-words text-3xl font-bold text-black">{title}</Text>
+        <Text className="break-words text-3xl font-bold text-black">
+          {title}
+        </Text>
         <View
           style={{
             flexDirection: 'row',
@@ -122,7 +148,7 @@ function NewsDetailScreen() {
         >
           <Text style={{opacity: 0.5}}>{date} - </Text>
           <Text style={{opacity: 0.5}}>{src} / </Text>
-          <TouchableOpacity onPress={openWebPage}>
+          <TouchableOpacity onPress={() => openWebPage(srcUrlOpenWeb)}>
             <Text style={{color: 'blue', textDecorationLine: 'underline'}}>
               Xem trang gốc
             </Text>
@@ -134,11 +160,18 @@ function NewsDetailScreen() {
             source={{uri: `${BaseUrl}${mainImg}`}}
           />
           <View className="pt-2 flex-row justify-center py-1">
-            <BannerAd size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} unitId={AdsAndroidKeyBanner} />
+            <BannerAd
+              size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+              unitId={AdsAndroidKeyBanner}
+            />
           </View>
         </View>
-        <HTML source={{html: displayDes}} contentWidth={width} tagsStyles={{p:{color:"black"}, span:{color:"black"}}}/>
-        <TouchableOpacity
+        <HTML
+          source={{html: des}}
+          contentWidth={width}
+          tagsStyles={{p: {color: 'black'}, span: {color: 'black'}}}
+        />
+        {/* <TouchableOpacity
           onPress={() => {
             setShowMore(!showMore);
           }}
@@ -146,18 +179,25 @@ function NewsDetailScreen() {
           <Text style={{color: 'black', fontSize: 18}}>
             {showMore ? 'Thu gọn' : 'Đọc tiếp...'}
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <View className="flex-row mt-2">
-          <Text style={{color: 'black'}}>*{src} / </Text>
-          <TouchableOpacity onPress={openWebPage}>
-            <Text style={{color: 'blue', textDecorationLine: 'underline'}}>
-              Nguồn dẫn
-            </Text>
-          </TouchableOpacity>
-        </View>
+  <Text 
+    style={{color: 'black'}} 
+    numberOfLines={1} 
+    ellipsizeMode='tail'
+  >
+    *{srcMain} / 
+  </Text>
+  <TouchableOpacity onPress={() => openWebPage2(srcClick)}>
+    <Text style={{color: 'blue', textDecorationLine: 'underline'}}>
+      Nguồn dẫn 
+    </Text>
+  </TouchableOpacity>
+</View>
       </View>
       <View className="flex-row align-middle mt-6">
         <Image
+        
           className="w-6 h-6 mr-2 ml-1"
           source={{
             uri: 'https://tintuc.devtest.ink/upload/sao.png',
@@ -167,13 +207,23 @@ function NewsDetailScreen() {
           Lời hay ý đẹp
         </Text>
       </View>
+      <View style={{
+         flex: 1,
+         justifyContent: "center",
+         alignItems: "center",
+      }}>
       <Image
-        style={{width: '100%', height: 500, borderRadius: 12}}
-        resizeMode="cover"
+       style={{width: screenWidth ,  borderRadius: 12, aspectRatio: 1}}
+       resizeMode="stretch"
         source={{
-          uri: 'https://cdn.vntrip.vn/cam-nang/wp-content/uploads/2020/03/tong-hop-nhung-cau-noi-hay-nhat-ve-cuoc-song.jpg',
+          uri:
+            contentDetails != null
+              ? `${BaseUrl}${contentDetails}`
+              : 'https://cdn.vntrip.vn/cam-nang/wp-content/uploads/2020/03/tong-hop-nhung-cau-noi-hay-nhat-ve-cuoc-song.jpg',
         }}
       />
+      </View>
+      
       <View className="flex-row align-middle mt-6">
         <Image
           className="w-6 h-6 mr-2 ml-1"
@@ -190,7 +240,10 @@ function NewsDetailScreen() {
         <View key={index}>
           <ItemMoreBellow dataMore={dataMore} />
           <View className="pt-2 flex-row justify-center py-1">
-            <BannerAd size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} unitId={AdsAndroidKeyBanner} />
+            <BannerAd
+              size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+              unitId={AdsAndroidKeyBanner}
+            />
           </View>
         </View>
       ))}
@@ -206,7 +259,10 @@ function NewsDetailScreen() {
         }}
       >
         <View className="pt-2 flex-row justify-center py-1">
-          <BannerAd size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} unitId={AdsAndroidKeyBanner} />
+          <BannerAd
+            size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+            unitId={AdsAndroidKeyBanner}
+          />
         </View>
       </View>
     </ScrollView>
