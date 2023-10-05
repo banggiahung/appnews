@@ -13,6 +13,26 @@ import { createNotificationChannel } from "./Config/Notifications";
 
 export default function App() {
 
+  async function onDisplayNotification({title, body}) {
+
+    await notifee.createChannel({
+      id: 'default',
+      name: 'Default Channel',
+    });
+
+    await notifee.displayNotification({
+      title: title,
+      body: body,
+      android: {
+        channelId:"default",
+        smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
+        // pressAction is needed if you want the notification to open the app when pressed
+        pressAction: {
+          id: 'default',
+        },
+      },
+    });
+  }
   const requestUserPermission = async () => {
     try {
       PermissionsAndroid.request(
@@ -65,7 +85,7 @@ export default function App() {
       const { title, body } = remoteMessage.notification;
       console.log(title);
       // xử lý thông báo khi người dùng đang hoạt động
-
+      await onDisplayNotification({title, body})
     });
     return unsubscribe;
   }, []);

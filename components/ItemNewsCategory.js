@@ -1,16 +1,21 @@
 import React, {Component} from 'react';
 import {Image, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import { AdEventType } from "react-native-google-mobile-ads";
 
 
-function ItemNewsCategory({data}) {
+function ItemNewsCategory({data, ads}) {
   if (data.mainImg == null) {
     data.mainImg =
       'https://i1-vnexpress.vnecdn.net/2023/09/06/5072937599714c2f1560-169398398-7818-8802-1693984415.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=BmqGixalJBBwPhydFY9xYQ';
   }
   const navigation = useNavigation();
   const ChangeScreen = () => {
-    navigation.navigate('DetailNews', {newsId: data.id});
+    ads.load()
+    ads.addAdEventListener(AdEventType.LOADED, ()=>{
+      ads.show()
+      navigation.navigate('DetailNews', {newsId: data.id});
+    })
   };
   return (
     <View

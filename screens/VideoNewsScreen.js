@@ -33,6 +33,10 @@ function VideoNewsScreen() {
   const [newsData, setNewsData] = useState([]);
   const [news, setNews] = useState([]);
   const navigation = useNavigation();
+  //create ads
+  const appOpenAd = InterstitialAd.createForAdRequest(AdsAndroidKeyVideo, {
+    requestNonPersonalizedAdsOnly: true,
+  });
 
   const getCategoryData = () => {
     return axios
@@ -86,15 +90,6 @@ function VideoNewsScreen() {
 
 
   useEffect(() => {
-    //create ads
-    const appOpenAd = InterstitialAd.createForAdRequest(AdsAndroidKeyVideo, {
-      requestNonPersonalizedAdsOnly: true,
-    });
-    //load ads
-    appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
-      appOpenAd.show();
-    });
-
     Promise.all([getCategoryData(), getProductData()]).then(results => {
       const [categoryData, productData] = results;
       console.log(productData);
@@ -121,7 +116,11 @@ function VideoNewsScreen() {
               className="flex-col"
               style={[styles.card, styles.shadowProp]}
               onPress={() => {
-                navigation.navigate("VideoDetailScreen", { videoId: item.id });
+                appOpenAd.load()
+                appOpenAd.addAdEventListener(AdEventType.LOADED, ()=>{
+                  appOpenAd.show();
+                  navigation.navigate("VideoDetailScreen", { videoId: item.id });
+                })
               }}
             >
               <Image className="w-full h-60 relative" source={{ uri: item.mainPathImg }} />

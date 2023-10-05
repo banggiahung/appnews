@@ -1,5 +1,5 @@
-import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   ScrollView,
   View,
@@ -10,32 +10,35 @@ import {
   Image,
   StyleSheet,
   Button,
-  RefreshControl
-} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
-import axios from '../Config/Axios';
-import {products, category, BaseUrl, AdsAndroidKeyVideo, AdsAndroidKeyBanner} from '../Config';
-import Axios from '../Config/Axios';
-import {useNavigation} from '@react-navigation/native';
-import GroupNewsCategory from '../components/GroupNewsCategory';
+  RefreshControl,
+} from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "../Config/Axios";
+import { products, category, BaseUrl, AdsAndroidKeyVideo, AdsAndroidKeyBanner } from "../Config";
+import Axios from "../Config/Axios";
+import { useNavigation } from "@react-navigation/native";
+import GroupNewsCategory from "../components/GroupNewsCategory";
 import {
   InterstitialAd,
   AdEventType,
   TestIds,
   BannerAd,
   BannerAdSize,
-} from 'react-native-google-mobile-ads';
+} from "react-native-google-mobile-ads";
 import messaging from "@react-native-firebase/messaging";
-import { Notifications } from 'react-native-notifications';
+import { Notifications } from "react-native-notifications";
 import { createLocalNotification } from "../Config/Notifications";
 
 function HomeScreen() {
-  const [refreshing, setRefreshing] = useState(false)
+  const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [newsData, setNewsData] = useState([]);
   const [news, setNews] = useState([]);
   const navigation = useNavigation();
-
+//create ads
+  const appOpenAd = InterstitialAd.createForAdRequest(AdsAndroidKeyVideo, {
+    requestNonPersonalizedAdsOnly: true,
+  });
   const getRandomElementsFromArray = (array, numberOfElements) => {
     if (numberOfElements > array.length) {
       return [];
@@ -51,7 +54,7 @@ function HomeScreen() {
 
   const getCategoryData = () => {
     return axios
-      .get('/api/v1/Items/GetAllCategoryMobile')
+      .get("/api/v1/Items/GetAllCategoryMobile")
       .then(data => {
         let count = data.category.length;
         for (let i = 0; i < count; i++) {
@@ -70,7 +73,7 @@ function HomeScreen() {
 
   const getProductData = () => {
     return axios
-      .get('/api/v1/Items/GetAllProductMobie')
+      .get("/api/v1/Items/GetAllProductMobie")
       .then(data => {
         let count = data.products.length;
         let list = [];
@@ -99,7 +102,7 @@ function HomeScreen() {
         let news = productData
           .filter(k => k.cateID.includes(cate.id))
           .splice(0, 5);
-        temp.push({cate, news});
+        temp.push({ cate, news });
       }
       setNewsData(temp);
       setNews(productData);
@@ -111,10 +114,6 @@ function HomeScreen() {
 
   useEffect(() => {
 
-    //create ads
-    const appOpenAd = InterstitialAd.createForAdRequest(AdsAndroidKeyVideo, {
-      requestNonPersonalizedAdsOnly: true,
-    });
     Promise.all([getCategoryData(), getProductData()]).then(results => {
       const [categoryData, productData] = results;
       let temp = [];
@@ -123,17 +122,12 @@ function HomeScreen() {
         let news = productData
           .filter(k => k.cateID.includes(cate.id))
           .splice(0, 5);
-        temp.push({cate, news});
+        temp.push({ cate, news });
       }
       setNewsData(temp);
       setNews(productData);
-
-      //load ads
-      appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
-        //appOpenAd.show()
-      });
       setLoading(false);
-      appOpenAd.load();
+
     });
 
   }, []);
@@ -162,7 +156,11 @@ function HomeScreen() {
                     <View className="w-full px-3 my-2" key={k}>
                       <TouchableOpacity
                         onPress={() => {
-                          navigation.navigate('DetailNews', {newsId: is.id});
+                          appOpenAd.load();
+                          appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
+                            appOpenAd.show();
+                            navigation.navigate("DetailNews", { newsId: is.id });
+                          });
                         }}
                       >
                         <Text className="px-3 opacity-75">• {is.title}</Text>
@@ -182,6 +180,7 @@ function HomeScreen() {
               <GroupNewsCategory
                 category={item.cate}
                 data={item.news}
+                ads={appOpenAd}
                 key={index}
               />
             );

@@ -9,13 +9,6 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import {
-  BannerAd,
-  TestIds,
-  InterstitialAd,
-  AdEventType,
-  BannerAdSize,
-} from "react-native-google-mobile-ads";
 import { useRoute } from "@react-navigation/native";
 import axios from "../Config/Axios";
 import { BaseUrl, AdsAndroidKeyBanner, AdsAndroidKeyVideo } from "../Config";
@@ -89,17 +82,6 @@ function NewsDetailScreen() {
   };
   const screenWidth = Dimensions.get("window").width;
   useEffect(() => {
-
-    //create ads
-    const appOpenAd = InterstitialAd.createForAdRequest(AdsAndroidKeyVideo, {
-      requestNonPersonalizedAdsOnly: true,
-    });
-    //load ads
-    appOpenAd.load();
-    appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
-      appOpenAd.show();
-    });
-
     axios.get(`/api/v1/Items/KeyProducts/${newsId}`).then(data => {
       setTitle(data.newsData.title);
       setMainImg(data.newsData.mainImg);

@@ -17,6 +17,10 @@ function AllNewsScreenByCategory() {
   const [items, setItems] = useState([]);
   const [refreshing, setRefreshing] = useState(false)
   const categoryId = route.params.categoryId;
+  //create ads
+  const appOpenAd = InterstitialAd.createForAdRequest(AdsAndroidKeyVideo, {
+    requestNonPersonalizedAdsOnly: true,
+  });
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     axios.get(`/api/v1/Items/KeyCategory/${categoryId}`).then(data => {
@@ -46,7 +50,7 @@ function AllNewsScreenByCategory() {
         </View>
         {items.map((item, index) => (
           <View key={index}>
-            <ItemNewsCategory data={item} />
+            <ItemNewsCategory data={item} ads={appOpenAd}/>
           </View>
         ))}
         <View className="flex flex-row justify-center">
