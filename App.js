@@ -1,10 +1,15 @@
-import {Provider} from 'react-redux';
-import {useEffect, useState} from 'react';
-import Navigation from './Config/Navigation';
-import {store} from './Config/configureStore';
-import messaging, {firebase} from '@react-native-firebase/messaging';
-import {PermissionsAndroid, View, Text} from 'react-native';
-import {AppOpenAd, TestIds, AdEventType} from 'react-native-google-mobile-ads';
+import { Provider } from "react-redux";
+import { useEffect, useState } from "react";
+import Navigation from "./Config/Navigation";
+import { store } from "./Config/configureStore";
+import messaging, { firebase } from "@react-native-firebase/messaging";
+import notifee from "@notifee/react-native";
+import { PermissionsAndroid, View, Text } from "react-native";
+import { AppOpenAd, TestIds, AdEventType } from "react-native-google-mobile-ads";
+import axios from "./Config/Axios";
+import { createNotificationChannel } from "./Config/Notifications";
+
+
 
 export default function App() {
 
@@ -18,45 +23,50 @@ export default function App() {
         authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
         authStatus === messaging.AuthorizationStatus.PROVISIONAL;
       if (enabled) {
-        console.log('Authorization status:', authStatus);
+        console.log("Authorization status:", authStatus);
       }
     } catch (error) {
-      console.error('Firebase Error:', error);
+      console.error("Firebase Error:", error);
     }
   };
 
   useEffect(listener => {
     if (requestUserPermission()) {
+      //createNotificationChannel()
       messaging()
         .getToken()
-        .then(token => console.log('token', token));
+        .then(token => console.log("token2", token));
     } else {
-      console.log('Failed token status');
+      console.log("Failed token status");
     }
+
     messaging()
       .getInitialNotification()
       .then(remoteMessage => {
         if (remoteMessage) {
           console.log(
-            'Notification caused app to open from quit state:',
+            "Thông báo khiến ứng dụng mở từ trạng thái thoát:",
             remoteMessage.notification,
           );
         }
       });
     messaging().onNotificationOpenedApp(remoteMessage => {
       console.log(
-        'Notification caused app to open from background state:',
+        "Thông báo khiến ứng dụng mở từ trạng thái nền:",
         remoteMessage.notification,
       );
     });
+
     messaging().setBackgroundMessageHandler(async remoteMessage => {
-      console.log('Message handled in the background!', remoteMessage);
-    });
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      const {title, body} = remoteMessage.notification;
-      // to do
+      console.log("Tin nhắn được xử lý ở chế độ nền", remoteMessage.notification);
     });
 
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      const { title, body } = remoteMessage.notification;
+      console.log(title);
+      // xử lý thông báo khi người dùng đang hoạt động
+
+    });
     return unsubscribe;
   }, []);
 

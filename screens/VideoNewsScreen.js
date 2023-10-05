@@ -6,47 +6,37 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-} from 'react-native';
+  RefreshControl
+} from "react-native";
 import {
   BannerAd,
   TestIds,
   InterstitialAd,
   BannerAdSize,
   AdEventType,
-} from 'react-native-google-mobile-ads';
-import Video from 'react-native-video';
-import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {useNavigation} from '@react-navigation/native';
-import axios from '../Config/Axios';
+} from "react-native-google-mobile-ads";
+import Video from "react-native-video";
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+import axios from "../Config/Axios";
 import {
   products,
   category,
   BaseUrl,
   AdsAndroidKeyBanner,
   AdsAndroidKeyVideo,
-} from '../Config';
+} from "../Config";
 
 function VideoNewsScreen() {
+  const [refreshing, setRefreshing] = useState(false)
   const [loading, setLoading] = useState(true);
   const [newsData, setNewsData] = useState([]);
   const [news, setNews] = useState([]);
   const navigation = useNavigation();
-  const getRandomElementsFromArray = (array, numberOfElements) => {
-    if (numberOfElements > array.length) {
-      return [];
-    }
-    const copyArray = [...array];
-    const randomElements = [];
-    for (let i = 0; i < numberOfElements; i++) {
-      const randomIndex = Math.floor(Math.random() * copyArray.length);
-      randomElements.push(copyArray.splice(randomIndex, 1)[0]);
-    }
-    return randomElements;
-  };
 
   const getCategoryData = () => {
     return axios
-      .get('/api/v1/Items/GetAllCategoryMobile')
+      .get("/api/v1/Items/GetAllCategoryMobile")
       .then(data => {
         let count = data.category.length;
         for (let i = 0; i < count; i++) {
@@ -65,7 +55,7 @@ function VideoNewsScreen() {
 
   const getProductData = () => {
     return axios
-      .get('/api/v1/Items/GetAllVideoMobie')
+      .get("/api/v1/Items/GetAllVideoMobie")
       .then(data => {
         let count = data.video.length;
         let list = [];
@@ -84,6 +74,17 @@ function VideoNewsScreen() {
       });
   };
 
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+
+    Promise.all([getCategoryData(), getProductData()]).then(results => {
+      const [categoryData, productData] = results;
+      setNews(productData);
+      setRefreshing(false);
+    })
+  }, []);
+
+
   useEffect(() => {
     //create ads
     const appOpenAd = InterstitialAd.createForAdRequest(AdsAndroidKeyVideo, {
@@ -91,7 +92,7 @@ function VideoNewsScreen() {
     });
     //load ads
     appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
-      //appOpenAd.show()
+      appOpenAd.show();
     });
 
     Promise.all([getCategoryData(), getProductData()]).then(results => {
@@ -103,7 +104,10 @@ function VideoNewsScreen() {
   }, []);
 
   return (
-    <ScrollView>
+    <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
       <View className="pt-2 flex-row justify-center">
         <BannerAd
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
@@ -117,28 +121,28 @@ function VideoNewsScreen() {
               className="flex-col"
               style={[styles.card, styles.shadowProp]}
               onPress={() => {
-                navigation.navigate('VideoDetailScreen', {videoId: item.id});
+                navigation.navigate("VideoDetailScreen", { videoId: item.id });
               }}
             >
-              <Image className="w-full h-60 relative" source={{uri: item.mainPathImg}} />
+              <Image className="w-full h-60 relative" source={{ uri: item.mainPathImg }} />
               <View
                 style={{
-                  position: 'absolute',
-                  top: '30%',
-                  left: '45%',
-                  transform: [{translateX: -15}, {translateY: -15}],
+                  position: "absolute",
+                  top: "30%",
+                  left: "45%",
+                  transform: [{ translateX: -15 }, { translateY: -15 }],
                   zIndex: 2,
                 }}
               >
                 <View
                   style={{
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
                 >
                   <Image
-                    source={require('../assets/SystemImg/play_video.png')}
-                    style={{width: 100, height: 100}}
+                    source={require("../assets/SystemImg/play_video.png")}
+                    style={{ width: 100, height: 100 }}
                   />
                 </View>
               </View>
@@ -148,15 +152,15 @@ function VideoNewsScreen() {
                 </Text>
               </View>
             </TouchableOpacity>
-            <View className="py-2 flex-row justify-center">
-              <BannerAd
-                size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-                unitId={AdsAndroidKeyBanner}
-              />
-            </View>
           </View>
         );
       })}
+      <View className="py-2 flex-row justify-center">
+        <BannerAd
+          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+          unitId={AdsAndroidKeyBanner}
+        />
+      </View>
     </ScrollView>
   );
 }
@@ -164,20 +168,20 @@ function VideoNewsScreen() {
 const styles = StyleSheet.create({
   heading: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 13,
   },
   card: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 12,
     paddingVertical: 15,
     paddingHorizontal: 15,
-    width: '100%',
+    width: "100%",
     marginVertical: 10,
   },
   shadowProp: {
-    shadowColor: '#171717',
-    shadowOffset: {width: -2, height: 4},
+    shadowColor: "#171717",
+    shadowOffset: { width: -2, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
   },

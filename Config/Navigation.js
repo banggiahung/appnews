@@ -3,7 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { lazy, useEffect, useState } from "react";
 import NewsDetailScreen from "../screens/NewsDetailScreen";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { Button, Image, Text, TouchableOpacity, View } from "react-native";
+import { Button, Image, Text, TouchableOpacity, View,  Animated, Easing } from "react-native";
 import { category, ColorCustom } from "./index.js";
 import { useSelector } from "react-redux";
 import { getTitle } from "../slices/HeaderTitleSlice";
@@ -17,9 +17,24 @@ const Drawer = createDrawerNavigator();
 
 function Navigation() {
   let title = useSelector(getTitle);
+  const [rotation] = useState(new Animated.Value(0))
   const [cate, setCate] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const rotateImage = () => {
+    Animated.timing(rotation, {
+      toValue: 1,
+      duration: 1000,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }).start(() => {
+      rotation.setValue(0); // Reset giá trị về 0 để tạo hiệu ứng xoay liên tục
+      rotateImage(); // Gọi lại hàm rotateImage
+    });
+  };
+
   useEffect(() => {
+    rotateImage();
     const fetchData = async () => {
       let list = [];
       try {
@@ -39,7 +54,19 @@ function Navigation() {
     return (
       <View className="w-full h-screen flex flex-row justify-center items-center">
         <View className="h-fit">
-          <Image source={require("../assets/animation/loader.gif")} />
+          <Animated.Image // Sử dụng Animated.Image
+            source={require("../assets/animation/loader.gif")}
+            style={{
+              transform: [
+                {
+                  rotate: rotation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '360deg'],
+                  }),
+                },
+              ],
+            }}
+          />
         </View>
       </View>
     );

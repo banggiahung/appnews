@@ -1,5 +1,5 @@
 import React, {Component, useEffect, useState} from 'react';
-import {ScrollView, Text, View} from 'react-native';
+import {ScrollView, Text, View, RefreshControl} from 'react-native';
 import ItemNewsCategory from '../components/ItemNewsCategory';
 import axios from '../Config/Axios';
 import {useRoute} from '@react-navigation/native';
@@ -15,42 +15,46 @@ import {AdsAndroidKeyBanner, AdsAndroidKeyVideo} from "../Config"
 function AllNewsScreenByCategory() {
   const route = useRoute();
   const [items, setItems] = useState([]);
+  const [refreshing, setRefreshing] = useState(false)
   const categoryId = route.params.categoryId;
-  useEffect(() => {
-    //create ads
-    const appOpenAd = InterstitialAd.createForAdRequest(AdsAndroidKeyVideo, {
-      requestNonPersonalizedAdsOnly: true,
-    });
-    //load ads
-    appOpenAd.load();
-    appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
-      //appOpenAd.show();
-    });
-
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
     axios.get(`/api/v1/Items/KeyCategory/${categoryId}`).then(data => {
       setItems(data.productsInCategory);
+      setRefreshing(false);
+    });
+  }, []);
 
+
+  useEffect(() => {
+    axios.get(`/api/v1/Items/KeyCategory/${categoryId}`).then(data => {
+      setItems(data.productsInCategory);
     });
   }, [categoryId]);
 
   return (
-    <ScrollView>
+    <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
       <ScrollView>
+        <View className="flex flex-row justify-center">
+          <BannerAd
+            size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+            unitId={AdsAndroidKeyBanner}
+          />
+        </View>
         {items.map((item, index) => (
           <View key={index}>
             <ItemNewsCategory data={item} />
-            <View className="pt-2 flex flex-col">
-              <BannerAd
-                size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-                unitId={AdsAndroidKeyBanner}
-              />
-              <BannerAd
-                size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-                unitId={AdsAndroidKeyBanner}
-              />
-            </View>
           </View>
         ))}
+        <View className="flex flex-row justify-center">
+          <BannerAd
+            size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+            unitId={AdsAndroidKeyBanner}
+          />
+        </View>
       </ScrollView>
     </ScrollView>
   );

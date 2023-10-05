@@ -10,6 +10,7 @@ import {
   Image,
   StyleSheet,
   Button,
+  RefreshControl
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import axios from '../Config/Axios';
@@ -24,8 +25,12 @@ import {
   BannerAd,
   BannerAdSize,
 } from 'react-native-google-mobile-ads';
+import messaging from "@react-native-firebase/messaging";
+import { Notifications } from 'react-native-notifications';
+import { createLocalNotification } from "../Config/Notifications";
 
 function HomeScreen() {
+  const [refreshing, setRefreshing] = useState(false)
   const [loading, setLoading] = useState(true);
   const [newsData, setNewsData] = useState([]);
   const [news, setNews] = useState([]);
@@ -84,12 +89,32 @@ function HomeScreen() {
       });
   };
 
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    Promise.all([getCategoryData(), getProductData()]).then(results => {
+      const [categoryData, productData] = results;
+      let temp = [];
+      for (let i = 0; i < categoryData.length; i++) {
+        let cate = categoryData[i];
+        let news = productData
+          .filter(k => k.cateID.includes(cate.id))
+          .splice(0, 5);
+        temp.push({cate, news});
+      }
+      setNewsData(temp);
+      setNews(productData);
+
+      setRefreshing(false);
+
+    });
+  }, []);
+
   useEffect(() => {
+
     //create ads
     const appOpenAd = InterstitialAd.createForAdRequest(AdsAndroidKeyVideo, {
       requestNonPersonalizedAdsOnly: true,
     });
-
     Promise.all([getCategoryData(), getProductData()]).then(results => {
       const [categoryData, productData] = results;
       let temp = [];
@@ -107,11 +132,10 @@ function HomeScreen() {
       appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
         //appOpenAd.show()
       });
-
       setLoading(false);
-
       appOpenAd.load();
     });
+
   }, []);
 
   if (loading) {
@@ -122,9 +146,11 @@ function HomeScreen() {
     );
   } else {
     return (
-      <ScrollView>
-        <View className="pt-2 flex flex-col ">
-          <BannerAd size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} unitId={AdsAndroidKeyBanner} />
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
+        <View className="pt-2 flex flex-row justify-center ">
           <BannerAd size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} unitId={AdsAndroidKeyBanner} />
         </View>
         {newsData.map((item, index) => {
@@ -161,7 +187,6 @@ function HomeScreen() {
             );
           }
         })}
-
       </ScrollView>
     );
   }

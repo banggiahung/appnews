@@ -144,9 +144,6 @@ function GroupNewsCategory({data, category}) {
           </TouchableOpacity>
         </View>
       </View>
-      <View className="pt-2 flex-row justify-center py-1">
-        <BannerAd size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} unitId={AdsAndroidKeyBanner} />
-      </View>
     </View>
   );
 }

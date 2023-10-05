@@ -60,5 +60,4 @@ function ItemNewsCategory({data}) {
     </View>
   );
 }
-
 export default ItemNewsCategory;
