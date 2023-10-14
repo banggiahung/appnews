@@ -6,7 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  RefreshControl
+  RefreshControl,
 } from "react-native";
 import {
   BannerAd,
@@ -28,7 +28,7 @@ import {
 } from "../Config";
 
 function VideoNewsScreen() {
-  const [refreshing, setRefreshing] = useState(false)
+  const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [newsData, setNewsData] = useState([]);
   const [news, setNews] = useState([]);
@@ -85,7 +85,7 @@ function VideoNewsScreen() {
       const [categoryData, productData] = results;
       setNews(productData);
       setRefreshing(false);
-    })
+    });
   }, []);
 
 
@@ -116,11 +116,16 @@ function VideoNewsScreen() {
               className="flex-col"
               style={[styles.card, styles.shadowProp]}
               onPress={() => {
-                appOpenAd.load()
-                appOpenAd.addAdEventListener(AdEventType.LOADED, ()=>{
-                  appOpenAd.show();
-                  navigation.navigate("VideoDetailScreen", { videoId: item.id });
-                })
+                appOpenAd.load();
+                appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
+                  if (Math.random() < 0.5) {
+                    appOpenAd.show();
+                    navigation.navigate("VideoDetailScreen", { videoId: item.id });
+                  } else {
+                    navigation.navigate("VideoDetailScreen", { videoId: item.id });
+                  }
+
+                });
               }}
             >
               <Image className="w-full h-60 relative" source={{ uri: item.mainPathImg }} />
@@ -154,12 +159,6 @@ function VideoNewsScreen() {
           </View>
         );
       })}
-      <View className="py-2 flex-row justify-center">
-        <BannerAd
-          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-          unitId={AdsAndroidKeyBanner}
-        />
-      </View>
     </ScrollView>
   );
 }

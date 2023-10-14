@@ -53,12 +53,6 @@ function AllNewsScreenByCategory() {
             <ItemNewsCategory data={item} ads={appOpenAd}/>
           </View>
         ))}
-        <View className="flex flex-row justify-center">
-          <BannerAd
-            size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-            unitId={AdsAndroidKeyBanner}
-          />
-        </View>
       </ScrollView>
     </ScrollView>
   );

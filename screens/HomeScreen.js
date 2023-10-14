@@ -10,7 +10,7 @@ import {
   Image,
   StyleSheet,
   Button,
-  RefreshControl,
+  RefreshControl, Animated, Easing,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "../Config/Axios";
@@ -28,6 +28,8 @@ import {
 import messaging from "@react-native-firebase/messaging";
 import { Notifications } from "react-native-notifications";
 import { createLocalNotification } from "../Config/Notifications";
+import { interpolate } from "react-native-reanimated";
+
 
 function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
@@ -35,6 +37,7 @@ function HomeScreen() {
   const [newsData, setNewsData] = useState([]);
   const [news, setNews] = useState([]);
   const navigation = useNavigation();
+  const [rotation] = useState(new Animated.Value(0))
 //create ads
   const appOpenAd = InterstitialAd.createForAdRequest(AdsAndroidKeyVideo, {
     requestNonPersonalizedAdsOnly: true,
@@ -52,17 +55,31 @@ function HomeScreen() {
     return randomElements;
   };
 
+  const rotateImage = () => {
+    Animated.timing(rotation, {
+      toValue: 1,
+      duration: 1000,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }).start(() => {
+      rotation.setValue(0); // Reset giá trị về 0 để tạo hiệu ứng xoay liên tục
+      rotateImage(); // Gọi lại hàm rotateImage
+    });
+  };
+
   const getCategoryData = () => {
     return axios
       .get("/api/v1/Items/GetAllCategoryMobile")
       .then(data => {
         let count = data.category.length;
+        let list = [];
         for (let i = 0; i < count; i++) {
           list.push(data.category[i]);
         }
         return list;
       })
       .catch(err => {
+        console.log("errCate", err)
         let list = [];
         for (let i = 0; i < 3; i++) {
           list.push(category[i]);
@@ -104,7 +121,8 @@ function HomeScreen() {
           .splice(0, 5);
         temp.push({ cate, news });
       }
-      setNewsData(temp);
+      setNewsData(temp.sort((a, b)=> a.cate.id > b.cate.id));
+
       setNews(productData);
 
       setRefreshing(false);
@@ -113,18 +131,19 @@ function HomeScreen() {
   }, []);
 
   useEffect(() => {
-
+    rotateImage();
     Promise.all([getCategoryData(), getProductData()]).then(results => {
       const [categoryData, productData] = results;
       let temp = [];
       for (let i = 0; i < categoryData.length; i++) {
         let cate = categoryData[i];
+        console.log("cate", cate)
         let news = productData
           .filter(k => k.cateID.includes(cate.id))
           .splice(0, 5);
         temp.push({ cate, news });
       }
-      setNewsData(temp);
+      setNewsData(temp.sort((a, b)=> a.cate.id > b.cate.id));
       setNews(productData);
       setLoading(false);
 
@@ -134,8 +153,22 @@ function HomeScreen() {
 
   if (loading) {
     return (
-      <View className="w-full h-screen flex-1 p-20 align-middle justify-center">
-        <View className=""></View>
+      <View className="w-full h-screen flex flex-row justify-center items-center">
+        <View className="h-fit">
+          <Animated.Image // Sử dụng Animated.Image
+            source={require("../assets/animation/loader2.png")}
+            style={{
+              transform: [
+                {
+                  rotate: rotation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '360deg'],
+                  }),
+                },
+              ],
+            }}
+          />
+        </View>
       </View>
     );
   } else {
@@ -158,8 +191,13 @@ function HomeScreen() {
                         onPress={() => {
                           appOpenAd.load();
                           appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
-                            appOpenAd.show();
-                            navigation.navigate("DetailNews", { newsId: is.id });
+                            if (Math.random() < 0.5) {
+                              ads.show();
+                              navigation.navigate("DetailNews", { newsId: is.id });
+                            } else {
+                              navigation.navigate("DetailNews", { newsId: is.id });
+                            }
+
                           });
                         }}
                       >

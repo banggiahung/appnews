@@ -17,15 +17,9 @@ import ItemMoreBellow from "../components/ItemMoreBellow";
 
 function NewsDetailScreen() {
   const openWebPage = url => {
-    console.log("url", url);
+    console.log("url", srcUrlOpenWeb);
     if (url) {
-      Linking.openURL(url);
-    }
-  };
-  const openWebPage2 = url => {
-    console.log("url", url);
-    if (url) {
-      Linking.openURL(url);
+      Linking.openURL(`${url}`);
     }
   };
   const scrollViewRef = useRef(null);
@@ -36,7 +30,7 @@ function NewsDetailScreen() {
   const [srcMain, setSrcMain] = useState();
   const [contentDetails, setContentDetails] = useState();
   const [src, setSrc] = useState();
-  const [srcClick, setSrcCLick] = useState();
+  const [srcClick, setSrcCLick] = useState("");
   const [srcUrlOpenWeb, setSrcUrlOpenWeb] = useState("https://www.google.com/");
   const [mainImg, setMainImg] = useState();
   const [des, setDes] = useState("");
@@ -90,9 +84,7 @@ function NewsDetailScreen() {
       setDate(formatDate(data.newsData.createDate));
       setSrc(
         `Nguồn ${
-          data.newsData.src.startsWith("https://www.")
-            ? data.newsData.src.replace(/^https:\/\/www\.|\/$/g, "")
-            : data.newsData.src.replace(/^https:\/\//, "").replace(/\/$/, "")
+          data.src !== null ? data.src.replace(/^https:\/\/www\.|\/$/g, "").replace(/^https:\/\//, "").replace(/\/$/, "") : "chưa c"
         }`,
       );
       if (data.newsData.srcMain != null) {
@@ -108,8 +100,7 @@ function NewsDetailScreen() {
       } else {
         setSrcMain("Chưa có nguồn");
       }
-
-      setSrcUrlOpenWeb(data.newsData.src);
+      setSrcUrlOpenWeb(data.newsData.srcMain);
       setSrcCLick(data.newsData.srcMain);
     });
     getProductData();
@@ -146,7 +137,14 @@ function NewsDetailScreen() {
         <HTML
           source={{ html: des }}
           contentWidth={width}
-          tagsStyles={{ p: { color: "black" }, span: { color: "black" } }}
+          tagsStyles={{
+            p: { color: "black", fontSize: 20 },
+            span: { color: "black", fontSize: 20 },
+            h4:{fontSize: 20},
+            h3:{fontSize: 20},
+            h2:{fontSize: 20},
+            h1:{fontSize: 20},
+        }}
         />
         {/*<TouchableOpacity*/}
         {/*  onPress={() => {*/}

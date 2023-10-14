@@ -4,7 +4,7 @@ import Navigation from "./Config/Navigation";
 import { store } from "./Config/configureStore";
 import messaging, { firebase } from "@react-native-firebase/messaging";
 import notifee from "@notifee/react-native";
-import { PermissionsAndroid, View, Text } from "react-native";
+import { PermissionsAndroid, View, Text, Image } from "react-native";
 import { AppOpenAd, TestIds, AdEventType } from "react-native-google-mobile-ads";
 import axios from "./Config/Axios";
 import { createNotificationChannel } from "./Config/Notifications";
@@ -72,13 +72,13 @@ export default function App() {
       });
     messaging().onNotificationOpenedApp(remoteMessage => {
       console.log(
-        "Thông báo khiến ứng dụng mở từ trạng thái nền:",
+        "Vào đây trước",
         remoteMessage.notification,
       );
     });
 
     messaging().setBackgroundMessageHandler(async remoteMessage => {
-      console.log("Tin nhắn được xử lý ở chế độ nền", remoteMessage.notification);
+      console.log("Vào đây sau", remoteMessage.notification);
     });
 
     const unsubscribe = messaging().onMessage(async remoteMessage => {

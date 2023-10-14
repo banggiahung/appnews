@@ -62,11 +62,12 @@ function VideoDetailScreen() {
       );
       setSrcMain(
         `Nguồn ${
-          data.newsData.srcMain.startsWith('https://www.')
+          data.newsData.srcMain != null ? data.newsData.srcMain.startsWith('https://www.')
             ? data.newsData.srcMain.replace(/^https:\/\/www\.|\/$/g, '')
             : data.newsData.srcMain
                 .replace(/^https:\/\//, '')
-                .replace(/\/$/, '')
+                .replace(/\/$/, ''): "chưa có nguồn"
+          
         }`,
       );
       setSrcUrlOpenWeb(data.newsData.src);
@@ -81,12 +82,6 @@ function VideoDetailScreen() {
           paused={false}
           resizeMode="contain"
           style={{width: screenWidth, height: 400}}
-        />
-      </View>
-      <View className="py-2 flex-row justify-center bg-rose-400">
-        <BannerAd
-          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-          unitId={AdsAndroidKeyBanner}
         />
       </View>
       <View className="px-1.5">
