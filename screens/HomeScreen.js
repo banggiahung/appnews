@@ -90,7 +90,7 @@ function HomeScreen() {
 
   const getProductData = () => {
     return axios
-      .get("/api/v1/Items/GetAllProductMobie")
+      .get("/api/v1/Items/GetAllProductMobieWithLoad")
       .then(data => {
         let count = data.products.length;
         let list = [];
@@ -153,23 +153,21 @@ function HomeScreen() {
 
   if (loading) {
     return (
-      <View className="w-full h-screen flex flex-row justify-center items-center">
-        <View className="h-fit">
-          <Animated.Image // Sử dụng Animated.Image
-            source={require("../assets/animation/loader2.png")}
-            style={{
-              transform: [
-                {
-                  rotate: rotation.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: ['0deg', '360deg'],
-                  }),
-                },
-              ],
-            }}
-          />
-        </View>
-      </View>
+      <View style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
+      <Animated.Image 
+        source={require("../assets/animation/loader2.png")}
+        style={{
+          transform: [
+            {
+              rotate: rotation.interpolate({
+                inputRange: [0, 1],
+                outputRange: ['0deg', '360deg'],
+              }),
+            },
+          ],
+        }}
+      /> 
+    </View>
     );
   } else {
     return (
