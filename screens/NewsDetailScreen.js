@@ -22,6 +22,12 @@ function NewsDetailScreen() {
       Linking.openURL(`${url}`);
     }
   };
+  const openWebPage2 = url => {
+    console.log("url2", url);
+    if (url) {
+      Linking.openURL(`${url}`);
+    }
+  };
   const scrollViewRef = useRef(null);
   const { width } = useWindowDimensions();
   const route = useRoute();
@@ -82,12 +88,14 @@ function NewsDetailScreen() {
       setContentDetails(data.newsData.contentDetails);
       setDes(data.newsData.description);
       setDate(formatDate(data.newsData.createDate));
+      console.log("data.newsData.srcMain", data.newsData.srcMain);
+
       setSrc(
         `Nguồn ${
-          data.src !== null ? data.src.replace(/^https:\/\/www\.|\/$/g, "").replace(/^https:\/\//, "").replace(/\/$/, "") : "chưa c"
+          data.newsData.src !== null ? data.newsData.src.replace(/^https:\/\/www\.|\/$/g, "").replace(/^https:\/\//, "").replace(/\/$/, "") : "chưa có nguồn"
         }`,
       );
-      if (data.newsData.srcMain != null) {
+      if (data.newsData.srcMain != null && data.newsData.srcMain != "") {
         setSrcMain(
           `Nguồn ${
             data.newsData.srcMain.startsWith("https://www.")
@@ -100,11 +108,13 @@ function NewsDetailScreen() {
       } else {
         setSrcMain("Chưa có nguồn");
       }
-      setSrcUrlOpenWeb(data.newsData.srcMain);
+
+      setSrcUrlOpenWeb(data.newsData.src);
       setSrcCLick(data.newsData.srcMain);
     });
     getProductData();
     scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+    console.log("newId", newsId);
   }, [newsId]);
 
   return (
@@ -121,7 +131,10 @@ function NewsDetailScreen() {
           }}
         >
           <Text style={{ opacity: 0.5 }}>{date} - </Text>
-          <Text style={{ opacity: 0.5 }}>{src} / </Text>
+          {/*<Text style={{ opacity: 0.5 }}*/}
+          {/*      numberOfLines={1}*/}
+          {/*      ellipsizeMode="tail"*/}
+          {/*>{src} / </Text>*/}
           <TouchableOpacity onPress={() => openWebPage(srcUrlOpenWeb)}>
             <Text style={{ color: "blue", textDecorationLine: "underline" }}>
               Xem trang gốc
@@ -140,11 +153,11 @@ function NewsDetailScreen() {
           tagsStyles={{
             p: { color: "black", fontSize: 20 },
             span: { color: "black", fontSize: 20 },
-            h4:{fontSize: 20},
-            h3:{fontSize: 20},
-            h2:{fontSize: 20},
-            h1:{fontSize: 20},
-        }}
+            h4: { fontSize: 20 },
+            h3: { fontSize: 20 },
+            h2: { fontSize: 20 },
+            h1: { fontSize: 20 },
+          }}
         />
         {/*<TouchableOpacity*/}
         {/*  onPress={() => {*/}
@@ -161,7 +174,7 @@ function NewsDetailScreen() {
             numberOfLines={1}
             ellipsizeMode="tail"
           >
-            *{srcMain} /
+            {srcMain} /
           </Text>
           <TouchableOpacity onPress={() => openWebPage2(srcClick)}>
             <Text style={{ color: "blue", textDecorationLine: "underline" }}>

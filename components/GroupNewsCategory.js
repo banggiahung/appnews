@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { Component, lazy, useEffect, useState } from "react";
 import {
   Image,
   Text,
@@ -14,28 +14,28 @@ import { setTitle } from "../slices/HeaderTitleSlice";
 import RenderHTML from "react-native-render-html";
 import HTML from "react-native-render-html";
 
-function GroupNewsCategory({ data, category, ads }) {
+function GroupNewsCategory({ data, category }) {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { width } = useWindowDimensions();
+  const appOpenAd = InterstitialAd.createForAdRequest(AdsAndroidKeyVideo, {
+    requestNonPersonalizedAdsOnly: true,
+  });
   const ChangeScreen = () => {
-    ads.load();
-    ads.addAdEventListener(AdEventType.LOADED, () => {
-      if (Math.random() < 0.5) {
-        ads.show();
-        ads.addAdEventsListener(AdEventType.CLOSED, () => {
-          navigation.navigate("AllNewsScreenByCategory", { categoryId: category.id });
-          dispatch(setTitle(category.nameCate));
-        });
-
-      } else {
+    if (Math.random() < 0.5) {
+      appOpenAd.load();
+      appOpenAd.addAdEventListener(AdEventType.LOADED,()=>{
+        appOpenAd.show();
         dispatch(setTitle(category.nameCate));
         navigation.navigate("AllNewsScreenByCategory", { categoryId: category.id });
-      }
-    });
+      })
+    } else {
+      dispatch(setTitle(category.nameCate));
+      navigation.navigate("AllNewsScreenByCategory", { categoryId: category.id });
+    }
   };
 
-  if (data.length > 0 && data.length < 5 ) {
+  if (data.length > 0 && data.length < 5) {
     return (
       <View className="flex-col mt-2">
         <View className="bg-red-600 h-12 justify-center">
@@ -52,6 +52,7 @@ function GroupNewsCategory({ data, category, ads }) {
             <Image
               source={{ uri: data[0].mainImg }}
               className="w-full h-80 object-cover rounded"
+              loadingIndicatorSource={lazy()}
             />
             <View className="px-2">
               <Text className="text-xl font-bold px-1.5 text-black" numberOfLines={2}>
@@ -162,10 +163,10 @@ function GroupNewsCategory({ data, category, ads }) {
         <View className="flex-col">
           <TouchableOpacity
             onPress={() => {
-              ads.load();
-              ads.addAdEventListener(AdEventType.LOADED, () => {
+              appOpenAd.load()
+              appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
                 if (Math.random() < 0.5) {
-                  ads.show();
+                  appOpenAd.show();
                   navigation.navigate("DetailNews", { newsId: data[0].id });
                 } else {
                   navigation.navigate("DetailNews", { newsId: data[0].id });
@@ -190,7 +191,9 @@ function GroupNewsCategory({ data, category, ads }) {
                     borderWidth: 1,
                   }}
                 >
-                  <Text className="opacity-50 p-1.5 " style={{ fontSize: 12 }}>
+                  <Text className="opacity-50 p-1.5 " style={{ fontSize: 12 }}
+                        numberOfLines={2}
+                        ellipsizeMode="tail">
                     Nguồn{" "}
                     {data[0].src !== null ? data[0].src.replace(/^https:\/\/www\.|\/$/g, "").replace(/^https:\/\//, "").replace(/\/$/, "") : ""}
                   </Text>

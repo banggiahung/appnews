@@ -100,6 +100,7 @@ function HomeScreen() {
         return list;
       })
       .catch(err => {
+        console.log("err Home", err)
         setLoading(false);
         let list = [];
         for (let i = 0; i < 21; i++) {
@@ -154,7 +155,7 @@ function HomeScreen() {
   if (loading) {
     return (
       <View style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
-      <Animated.Image 
+      <Animated.Image
         source={require("../assets/animation/loader2.png")}
         style={{
           transform: [
@@ -166,7 +167,7 @@ function HomeScreen() {
             },
           ],
         }}
-      /> 
+      />
     </View>
     );
   } else {
@@ -216,7 +217,6 @@ function HomeScreen() {
               <GroupNewsCategory
                 category={item.cate}
                 data={item.news}
-                ads={appOpenAd}
                 key={index}
               />
             );

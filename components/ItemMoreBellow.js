@@ -11,10 +11,11 @@ function ItemMoreBellow({dataMore}) {
     }
     const navigation = useNavigation();
     const ChangeScreen = () => {
-      navigation.navigate('DetailNews', {newsId: dataMore.id});
+
+      navigation.navigate('DetailNews', {newsId: dataMore.productsID});
     };
     return (
-        
+
       <View
         style={{
           marginLeft: 8,
@@ -49,11 +50,11 @@ function ItemMoreBellow({dataMore}) {
               >
                 {' '}
                 Nguồn{' '}
-                {dataMore.src 
-  ? (dataMore.src.startsWith('https://www.') 
-      ? dataMore.src.replace(/^https:\/\/www\.|\/$/g, '') 
+                {dataMore.src
+  ? (dataMore.src.startsWith('https://www.')
+      ? dataMore.src.replace(/^https:\/\/www\.|\/$/g, '')
       : dataMore.src.replace(/^https:\/\/|\/$/g, '')
-    ) 
+    )
   : ''}
 
               </Text>
@@ -67,4 +68,3 @@ function ItemMoreBellow({dataMore}) {
     );
   }
 export default ItemMoreBellow;
-  

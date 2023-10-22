@@ -104,7 +104,7 @@ function AllNewsScreenByCategory() {
         setItems(newItems);
       });
   }, [categoryId]);
-  
+
     return (
       <ScrollView
         refreshControl={
@@ -123,13 +123,13 @@ function AllNewsScreenByCategory() {
           {items.length === 0 && <Text>{noDataMessage}</Text>}
           {items.map((item, index) => (
             <View key={index}>
-              <ItemNewsCategory data={item} ads={appOpenAd} />
+              <ItemNewsCategory data={item}/>
             </View>
           ))}
         </ScrollView>
       </ScrollView>
     );
-  
+
 }
 
 export default AllNewsScreenByCategory;
